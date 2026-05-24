@@ -62,7 +62,7 @@ flowchart TB
     H_BRIDGE["factory_bridge · auto_listing"]
     H_CRAWL["Federation crawler"]
     H_IDX["Capability index"]
-    H_API["Hub API :9080"]
+    H_API["Hub API :9083"]
     H_PLUG["PluginRegistry<br/>14× aimarket-* hooks"]
     H_DB[("hub index<br/>SQLite / PostgreSQL")]
     H_BRIDGE --> H_IDX

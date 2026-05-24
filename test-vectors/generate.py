@@ -180,5 +180,48 @@ announce = sign_federation_announce(announce)
 with open("federation-announce-signed.json", "w") as f:
     json.dump(announce, f, indent=2)
 
+# ── DebitAuthorization (EIP-712) ──────────────────────────────
+# Mirrors contracts/evm/AIMarketEscrow.sol DEBIT_TYPEHASH. The SDK stubs use
+# SHA-256 in place of keccak256; the canonical string and field order here
+# match the production contract, so swapping in keccak256 + secp256k1 ECDSA
+# in production keeps the same wire format.
+DEBIT_TYPEHASH = (
+    "DebitAuthorization(bytes32 channelId,address hub,address token,"
+    "uint256 amount,bytes32 receiptId,uint256 nonce,uint256 deadline)"
+)
+debit_auth = {
+    "typehash": DEBIT_TYPEHASH,
+    "domain": {
+        "name": "AIMarketEscrow",
+        "version": "1",
+        "chainId": 8453,  # Base mainnet
+        "verifyingContract": "0x0000000000000000000000000000000000000000",
+    },
+    "message": {
+        "channelId": (
+            "0x0000000000000000000000000000000000000000000000000000000000000001"
+        ),
+        "hub": "0x000000000000000000000000000000000000bEEF",
+        "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",  # USDC on Base
+        "amount": "5000000",  # 5.00 USDC (6 decimals)
+        "receiptId": (
+            "0x0000000000000000000000000000000000000000000000000000000000001234"
+        ),
+        "nonce": "0",
+        "deadline": "2000000000",
+    },
+    "signature_format": "eip712:<hex>",
+    "notes": (
+        "SDK stubs (Dart / TS / Rust) digest with SHA-256 over the canonical "
+        "string `0x1901|domain:<sha256>|DebitAuthorization:<sha256(sorted fields)>`. "
+        "Production: replace with keccak256 + secp256k1 ECDSA; `ECDSA.recover` "
+        "on-chain MUST return the depositor address or `debitChannel` reverts "
+        "with `InvalidSignature()`."
+    ),
+}
+
+with open("debit-authorization.json", "w") as f:
+    json.dump(debit_auth, f, indent=2)
+
 print("\n✅ All test vectors generated.")
 print(f"Files written to: test-vectors/")

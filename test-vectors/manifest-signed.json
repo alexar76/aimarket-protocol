@@ -1,6 +1,6 @@
 {
   "protocol_version": "v1",
-  "generated_at": "2026-05-21T20:34:09Z",
+  "generated_at": "2026-05-24T12:03:11Z",
   "base_url": "https://test-hub.example.com",
   "products_count": 3,
   "capabilities_count": 5,
@@ -46,6 +46,6 @@
   "signature": {
     "algorithm": "ed25519",
     "public_key": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
-    "value": "p0OpyzvElde3ovCs+ORvwcRGAtuTCH+dN19b8E7+trJDwVN5aHEC1uJN19E6kw/dxlbome8tvTZ+pFOLJq6MDw=="
+    "value": "9N8SsN8UTP85no5z+KPwPyPZ6zd3KsjY9VOkhjfRxit6ans2Q1mrHk6f87TOCGM1OHgTCzPtmwpq4jalaqlsDg=="
   }
 }

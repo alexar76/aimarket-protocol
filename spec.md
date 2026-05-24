@@ -319,9 +319,83 @@ Minimum bond: $100 USDT (testnet), $1,000 USDT (mainnet).
 
 ---
 
-## 6. Channels & Receipts
+## 6. Payment Channels
 
-### 6.1. Cross-Hub Channels
+Payment channels let a depositor pre-fund USDT/USDC on a supported chain, run
+N off-chain capability invocations with off-chain receipts, and settle once
+on-chain. The reference EVM contract is `AIMarketEscrow.sol`; the Solana
+counterpart is `aimarket_escrow`.
+
+### 6.1. Channel lifecycle
+
+| Step | Caller | Endpoint / call | Effect |
+|------|--------|------------------|--------|
+| open | depositor | `POST /ai-market/v2/channel/open` → `openChannel(channelId, token, depositAmount)` | Transfers tokens to escrow, sets 24h expiry. |
+| debit | hub (signed by depositor) | `debitChannel(channelId, amount, receiptId, deadline, sig)` | Increments `usedAmount`, marks `receiptId` used, binds hub to channel on first call. |
+| settle | depositor OR bound hub | `settleChannel(channelId)` | Pays `usedAmount` to bound hub, refunds remainder to depositor. |
+| refund | depositor only (and only before any debit) | `refundChannel(channelId, reason)` | Full refund (e.g. safety gate blocked). |
+| expire | anyone after expiry | `expireChannel(channelId)` | Same economics as settle — permissionless cleanup. |
+
+### 6.2. DebitAuthorization (EIP-712)
+
+The hub must present an EIP-712 typed-data signature from the depositor for
+every debit. The signature is verified on-chain by `ECDSA.recover` against
+`depositor`. Implementations MUST sign the canonical typehash literal below —
+any divergence (extra space, reordered fields, wrong field name) produces a
+different keccak256 hash, recovers the wrong address, and the contract
+reverts with `InvalidSignature()`.
+
+**Canonical typehash literal:**
+
+```solidity
+bytes32 private constant DEBIT_TYPEHASH = keccak256(
+  "DebitAuthorization(bytes32 channelId,address hub,address token,uint256 amount,bytes32 receiptId,uint256 nonce,uint256 deadline)"
+);
+```
+
+**Domain separator:**
+
+```solidity
+keccak256(abi.encode(
+  keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+  keccak256(bytes("AIMarketEscrow")),
+  keccak256(bytes("1")),
+  chainId,
+  address(escrow)
+));
+```
+
+**Field semantics:**
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `channelId` | `bytes32` | Channel identifier returned by `openChannel`. |
+| `hub` | `address` | Hub allowed to consume this signature; bound to the channel on first debit (replay protection across hubs). |
+| `token` | `address` | ERC-20 token escrowed in the channel (USDT/USDC). |
+| `amount` | `uint256` | Token amount in **base units** (USDT/USDC have 6 decimals). |
+| `receiptId` | `bytes32` | Off-chain receipt identifier; the contract stores it in `usedReceipts[receiptId]` to prevent double-spend. |
+| `nonce` | `uint256` | Current `channels[channelId].nonce`; the contract increments after a successful debit. |
+| `deadline` | `uint256` | Unix timestamp after which the contract rejects the authorization. |
+
+**EIP-712 chain-fork recomputation.** The contract caches the domain
+separator at deployment time and recomputes it if `block.chainid` changes
+(e.g. after a fork), so signatures cannot be replayed cross-fork. Implementors
+MUST use the current `chainid` when signing.
+
+**Solana parity.** The Solana program enforces the same payload shape via
+Ed25519 sysvar verification: `channel_id || hub || token_mint || amount ||
+receipt_id || nonce || deadline` is hashed and signed by the depositor's key.
+The on-chain CPI signer always uses `[b"vault", channel_id, vault_bump]` —
+NEVER `b"channel"` — so the accounting PDA cannot be confused with the token
+authority.
+
+**Reference SDKs.** Dart (`aimarket-sdks/dart/lib/src/signer.dart`),
+TypeScript (`aimarket-sdks/typescript/src/signer.ts`), and Rust
+(`aimarket-sdks/rust/src/signer.rs`) all expose
+`signDebitAuthorization(...)`. SDK stubs digest with SHA-256; production
+deployments MUST swap in keccak256 + secp256k1 ECDSA.
+
+### 6.3. Cross-Hub Channels
 
 Payment channels opened on one hub are NOT automatically valid on another hub. For cross-hub invocations:
 
@@ -332,7 +406,7 @@ Payment channels opened on one hub are NOT automatically valid on another hub. F
 
 This avoids cross-hub trust requirements for payment.
 
-### 6.2. Federated Receipts
+### 6.4. Federated Receipts
 
 A federated invocation produces two receipts:
 1. **Client receipt** — from routing hub, includes routing fee
