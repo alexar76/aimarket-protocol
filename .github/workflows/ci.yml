@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install validators
+        run: pip install jsonschema check-jsonschema
+
+      - name: Validate JSON schemas
+        run: |
+          python3 -m json.tool schemas/well-known.json >/dev/null
+          python3 -m json.tool schemas/manifest.json >/dev/null
+          python3 -m json.tool schemas/receipt.json >/dev/null
+
+      - name: Validate test vectors against schemas
+        run: |
+          check-jsonschema --schemafile schemas/manifest.json test-vectors/manifest-signed.json
+          check-jsonschema --schemafile schemas/well-known.json test-vectors/well-known.json
+          check-jsonschema --schemafile schemas/receipt.json test-vectors/receipt-signed.json
+
+      - name: Assert package version matches VERSION file
+        run: |
+          test "$(cat VERSION)" = "0.1.0"

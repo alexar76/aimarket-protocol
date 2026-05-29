@@ -7,16 +7,12 @@
 
 # AIMarket Protocol v2 — Federation
 
-> **Ecosystem:** [AICOM overview & live demos](https://alexar76.github.io/aicom/)
+[![CI](https://github.com/alexar76/aimarket-protocol/actions/workflows/ci.yml/badge.svg)](https://github.com/alexar76/aimarket-protocol/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/alexar76/aimarket-protocol?include_prereleases&label=release)](https://github.com/alexar76/aimarket-protocol/releases)
+
+> **Ecosystem:** [AICOM overview & live demos](https://alexar76.github.io/aicom/) · **Package version:** `0.1.0` ([VERSION](VERSION))
 
 **Status:** Draft v2.0.0  
-
-## Value in plain words
-
-Open rules for how AI marketplaces discover, price, pay, and verify calls — so hubs and apps interoperate like websites use HTTP. Build once, sell anywhere.
-
-Full text: [docs/value.md](docs/value.md)
-
 
 ## Documents
 
