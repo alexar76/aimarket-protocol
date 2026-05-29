@@ -7,6 +7,8 @@
 
 # AIMarket Protocol v2 — Federation
 
+> **Ecosystem:** [AICOM overview & live demos](https://alexar76.github.io/aicom/)
+
 **Status:** Draft v2.0.0  
 
 ## Value in plain words
