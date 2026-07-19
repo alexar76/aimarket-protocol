@@ -1,0 +1,14 @@
+{
+  "nonce": "rcpt_test001",
+  "product_id": "prod-001",
+  "capability_id": "translate.multi@v2",
+  "price_usd": 0.4,
+  "latency_ms": 8100,
+  "success": true,
+  "channel_id": "ch_test001",
+  "timestamp": "2026-05-24T12:03:11Z",
+  "signature": {
+    "algorithm": "ed25519",
+    "value": "gfGGz45ciH54A1b+7w1snVeF8fiTe0K9GE9p3X3UXIboR0kT3r1u+bi+dnsWqMUCM6FIk4/PESB26sX5lKX6Bw=="
+  }
+}
