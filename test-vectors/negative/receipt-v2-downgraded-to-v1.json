@@ -1,0 +1,28 @@
+{
+  "nonce": "rcpt_test002",
+  "product_id": "prod-001",
+  "capability_id": "translate.multi@v2",
+  "price_usd": 0.0,
+  "latency_ms": 0,
+  "success": false,
+  "timestamp": "2026-08-28T09:00:50Z",
+  "type": "rejection",
+  "channel_id": "ch_test001",
+  "reason": "verification_below_threshold",
+  "verify_score": 0.41,
+  "refunded": true,
+  "trace_id": "tr_test002",
+  "delivery_reasons": [
+    "claim_unsupported"
+  ],
+  "signature": {
+    "algorithm": "ed25519",
+    "value": "N6ac3Ra4rKxBR/tFwWgdTdoZi1E8ofDpXQb1bwEnMoAF+JJGDK1Wbo5MGXPeNl6TSxAUrMpOAvYaJp9RRFdYCw=="
+  },
+  "_expect": {
+    "result": "reject",
+    "reason": "version-under-covers-content",
+    "why": "A rejection receipt — reason, verify_score, refunded, channel_id all present — signed at v1 by the right key. The v1 signature is valid over the fields it covers, and every field the refund is actually argued from sits outside it. A verifier MAY accept the signature for back-compat with pre-v2 peers, but MUST NOT treat the v2 fields as authenticated, and MUST be able to say which ones are not. Accepting this as a fully verified rejection is the failure.",
+    "spec": "§7.3.4"
+  }
+}

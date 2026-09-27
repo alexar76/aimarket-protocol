@@ -1,0 +1,157 @@
+{
+  "description": "AIMarket mandates — normative vectors (aimarket-protocol/mandates.md §9). Test keys only.",
+  "hub_origin": "https://modelmarket.dev",
+  "keys": {
+    "owner": {
+      "seed_hex": "da9a6607ebde4d6cad3d9980416949a92d75badf432d37581b99752b102a5791",
+      "did": "did:key:z6MkiSZ71de5EPyndm9SDEEnnyKSpLk6bxtjfSGCanp28qUs"
+    },
+    "agent": {
+      "seed_hex": "0c726873e668f652521ef281849498f528a4caac4f56eafb70aafa796460cf24",
+      "did": "did:key:z6Mku2PcYSxP4e4F3LWB3D1TxPBCjhHYz99Fr6pgkpmZUvMm"
+    },
+    "delegate": {
+      "seed_hex": "3d549db4fffd422f9e95212927dd0776f03ba7f5170df3d78f41fda6a187f43d",
+      "did": "did:key:z6MkrW6RhFtUzmbmcHjfnzVeyk58CsjHuKKa5PMCNMyyFDt5"
+    },
+    "second_owner": {
+      "seed_hex": "167391b854cbce51cdf3d1ecf638d1e0dca0f28d73ad46f9838aabe47d66b897",
+      "did": "did:key:z6MkjM8RfPUmbV9fmEhSPCkYCJxiJcLbuYFJm4R3VcTvqQj5"
+    }
+  },
+  "root": {
+    "document": {
+      "@context": [
+        "https://www.w3.org/ns/credentials/v2"
+      ],
+      "type": [
+        "VerifiableCredential",
+        "AIMarketMandate"
+      ],
+      "id": "urn:uuid:0b8f6f2e-9a41-4d8e-8f1b-6a1f3c2d4e51",
+      "issuer": "did:key:z6MkiSZ71de5EPyndm9SDEEnnyKSpLk6bxtjfSGCanp28qUs",
+      "validFrom": "2026-09-26T00:00:00Z",
+      "validUntil": "2026-12-25T00:00:00Z",
+      "credentialSubject": {
+        "id": "did:key:z6Mku2PcYSxP4e4F3LWB3D1TxPBCjhHYz99Fr6pgkpmZUvMm",
+        "aimarketMandate": {
+          "version": 1,
+          "audience": [
+            "https://modelmarket.dev"
+          ],
+          "scope": [
+            "gaia.*",
+            "atlas.nearest.read@v1"
+          ],
+          "limits": {
+            "perCall": 20000,
+            "perDay": 1000000,
+            "total": 10000000,
+            "perProductPerDay": 400000
+          },
+          "subcontract": {
+            "perCallAllowance": 5000,
+            "maxDepth": 2
+          }
+        }
+      },
+      "proof": {
+        "@context": [
+          "https://www.w3.org/ns/credentials/v2"
+        ],
+        "type": "DataIntegrityProof",
+        "cryptosuite": "eddsa-jcs-2022",
+        "created": "2026-09-26T00:00:00Z",
+        "verificationMethod": "did:key:z6MkiSZ71de5EPyndm9SDEEnnyKSpLk6bxtjfSGCanp28qUs#z6MkiSZ71de5EPyndm9SDEEnnyKSpLk6bxtjfSGCanp28qUs",
+        "proofPurpose": "assertionMethod",
+        "proofValue": "z3nq1VQUsabBRjpZjySAYJ3Jp4QzmSmy116EphYhrwgQ7X4xArrutAZQ3yhwJt8VsCedtHAho5fWE6sqC2n5yAy9i"
+      }
+    },
+    "canonical_sha256": "a9587231f5cf726496101d9a99fb3069c8c9bc034e630690c6b1174eee81fcda",
+    "digest": "sha256-qVhyMfXPcmSWEB2amfswacjJvANOYwaQxrEXTu6B/No="
+  },
+  "child": {
+    "document": {
+      "@context": [
+        "https://www.w3.org/ns/credentials/v2"
+      ],
+      "type": [
+        "VerifiableCredential",
+        "AIMarketMandate"
+      ],
+      "id": "urn:uuid:7c2d9e10-3b5a-4f6c-9d8e-1a2b3c4d5e6f",
+      "issuer": "did:key:z6Mku2PcYSxP4e4F3LWB3D1TxPBCjhHYz99Fr6pgkpmZUvMm",
+      "validFrom": "2026-09-26T00:00:00Z",
+      "validUntil": "2026-12-25T00:00:00Z",
+      "credentialSubject": {
+        "id": "did:key:z6MkrW6RhFtUzmbmcHjfnzVeyk58CsjHuKKa5PMCNMyyFDt5",
+        "aimarketMandate": {
+          "version": 1,
+          "audience": [
+            "https://modelmarket.dev"
+          ],
+          "scope": [
+            "gaia.weather.read@v1"
+          ],
+          "limits": {
+            "perCall": 5000,
+            "perDay": 100000,
+            "total": 1000000,
+            "perProductPerDay": 100000
+          },
+          "parent": "sha256-qVhyMfXPcmSWEB2amfswacjJvANOYwaQxrEXTu6B/No="
+        }
+      },
+      "proof": {
+        "@context": [
+          "https://www.w3.org/ns/credentials/v2"
+        ],
+        "type": "DataIntegrityProof",
+        "cryptosuite": "eddsa-jcs-2022",
+        "created": "2026-09-26T00:00:00Z",
+        "verificationMethod": "did:key:z6Mku2PcYSxP4e4F3LWB3D1TxPBCjhHYz99Fr6pgkpmZUvMm#z6Mku2PcYSxP4e4F3LWB3D1TxPBCjhHYz99Fr6pgkpmZUvMm",
+        "proofPurpose": "assertionMethod",
+        "proofValue": "z41ENBWy9zNryqrYqKFxZ24485Sc6ek8n6HDAzQgVQRRiuMczYgjgRdEUMbDotBeotmkvSmfi6cwSU9Xuz7rGXowD"
+      }
+    },
+    "digest": "sha256-8/3NtVQjGSjakh3P8VUNqKLgOW/sYW9nkjI/sp+eqNY="
+  },
+  "request_proof": {
+    "method": "POST",
+    "path": "/ai-market/v2/invoke",
+    "body": "{\"product_id\":\"gaia.gateway\",\"capability_id\":\"gaia.weather.read@v1\",\"input\":{\"latitude\":60.17,\"longitude\":24.94},\"source_hub\":\"local\"}",
+    "t": 1790000000,
+    "n": "vector-nonce-000000000001",
+    "leaf": "sha256-8/3NtVQjGSjakh3P8VUNqKLgOW/sYW9nkjI/sp+eqNY=",
+    "message": "aimarket-mandate-request/1\nhttps://modelmarket.dev\nPOST /ai-market/v2/invoke\nsha256-8/3NtVQjGSjakh3P8VUNqKLgOW/sYW9nkjI/sp+eqNY=\n1790000000\nvector-nonce-000000000001\naa63adeda4dc3d1ebd3bfa13e0926f1ce11312c8758ecf22eac15748c172eed8",
+    "signature": "8UHT8Sm-1tjc0l9uDDLjH5axKKa5Bee_wm9PXH5gTb9b0ADQMahtTxMAqpt04xwvs8R5MXovB6j2LWLCEQEqAQ",
+    "header": "t=1790000000;n=vector-nonce-000000000001;s=8UHT8Sm-1tjc0l9uDDLjH5axKKa5Bee_wm9PXH5gTb9b0ADQMahtTxMAqpt04xwvs8R5MXovB6j2LWLCEQEqAQ"
+  },
+  "owner_link": {
+    "account_id": "acct_0123456789abcdef",
+    "did": "did:key:z6MkiSZ71de5EPyndm9SDEEnnyKSpLk6bxtjfSGCanp28qUs",
+    "t": 1790000000,
+    "n": "vector-nonce-000000000001",
+    "message": "aimarket-owner-link/1\nhttps://modelmarket.dev\nacct_0123456789abcdef\ndid:key:z6MkiSZ71de5EPyndm9SDEEnnyKSpLk6bxtjfSGCanp28qUs\n1790000000\nvector-nonce-000000000001",
+    "signature": "iuK9sakFr2fTIi0ZPOojMcwW_LhsXKEKx3dxQKIDWCl4N7gmgOds9ApCV9_GQTTENQDySv2bobI6fZxYdkWKCg"
+  },
+  "owner_change": {
+    "account_id": "acct_0123456789abcdef",
+    "by": "did:key:z6MkiSZ71de5EPyndm9SDEEnnyKSpLk6bxtjfSGCanp28qUs",
+    "action": "link",
+    "did": "did:key:z6MkjM8RfPUmbV9fmEhSPCkYCJxiJcLbuYFJm4R3VcTvqQj5",
+    "require_mandate": 1,
+    "t": 1790000000,
+    "n": "vector-nonce-000000000002",
+    "message": "aimarket-owner-change/1\nhttps://modelmarket.dev\nacct_0123456789abcdef\nlink\ndid:key:z6MkjM8RfPUmbV9fmEhSPCkYCJxiJcLbuYFJm4R3VcTvqQj5\n1\n1790000000\nvector-nonce-000000000002",
+    "signature": "jGIFrnpARZWs5bG_X_4NpqCe2jka4OlPwpAN2Cj3cLfey0Dd0sE1dPgzrdr5khj7ZcgczyamAm_pimZHScTJAA"
+  },
+  "revoke": {
+    "digest": "sha256-qVhyMfXPcmSWEB2amfswacjJvANOYwaQxrEXTu6B/No=",
+    "by": "did:key:z6MkiSZ71de5EPyndm9SDEEnnyKSpLk6bxtjfSGCanp28qUs",
+    "t": 1790000000,
+    "n": "vector-nonce-000000000003",
+    "message": "aimarket-mandate-revoke/1\nhttps://modelmarket.dev\nsha256-qVhyMfXPcmSWEB2amfswacjJvANOYwaQxrEXTu6B/No=\n1790000000\nvector-nonce-000000000003",
+    "signature": "VoxpiuA4yYuZB-Flr4237rTL4KwdWYK0DutGPBj1dRnXyvsDQVFQ6gyGrYEM-VCVlB2VqryrWnU0XZiTvCEZBw"
+  }
+}

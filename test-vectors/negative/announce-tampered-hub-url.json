@@ -1,0 +1,17 @@
+{
+  "hub_url": "https://attacker.example",
+  "well_known_url": "https://test-hub.example.com/.well-known/ai-market.json",
+  "capabilities_count": 5,
+  "hub_name": "Test AI Hub",
+  "signer_public_key": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+  "signature": {
+    "algorithm": "ed25519",
+    "value": "+BIzDuqr5mCcOZ/Mx9BmwttSjcA/Hl6zaNOmqYl4uvaKqCi4X9ANelJYjbApR0Dk6SVcYOTclHyn/oSzpc+fCQ=="
+  },
+  "_expect": {
+    "result": "reject",
+    "reason": "signature-invalid",
+    "why": "hub_url rewritten to redirect an announcement at an attacker's host. Inside the canonical; must fail.",
+    "spec": "§7.3.5"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "nonce": "rcpt_test001",
+  "product_id": "prod-001",
+  "capability_id": "translate.multi@v2",
+  "price_usd": 0.4,
+  "latency_ms": 8100,
+  "success": true,
+  "timestamp": "2026-08-28T09:00:50Z",
+  "signature": {
+    "algorithm": "ed25519",
+    "public_key": "0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=",
+    "value": "LpSC2kh1F6c8JmWeE/mgrd9zaBtQzAIS0b4P8yUVi7jSf/7IdwoueV4Ank8DpYno2nq1zm5SdwZoAN7Pn/17Bg=="
+  },
+  "_expect": {
+    "result": "reject",
+    "reason": "key-not-pinned",
+    "why": "Internally consistent: the canonical is right and the signature verifies against the key the document itself advertises. It is signed by the WRONG KEY. A verifier that trusts the embedded public_key instead of the key it pinned for this peer accepts anything anyone signs.",
+    "spec": "§2.2, §7.3.1"
+  }
+}

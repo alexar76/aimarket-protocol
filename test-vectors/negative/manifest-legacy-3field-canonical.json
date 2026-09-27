@@ -1,0 +1,57 @@
+{
+  "protocol_version": "v1",
+  "generated_at": "2026-08-28T09:00:50Z",
+  "base_url": "https://test-hub.example.com",
+  "products_count": 3,
+  "capabilities_count": 5,
+  "tools": [
+    {
+      "name": "prod-001.translate.multi@v2",
+      "description": "Translate text to multiple locales",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "locales": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "text"
+        ]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "translations": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "price_per_call_usd": 0.4,
+      "p50_latency_ms": 8100,
+      "success_rate_30d": 0.97,
+      "product_id": "prod-001",
+      "capability_id": "translate.multi@v2"
+    }
+  ],
+  "signature": {
+    "algorithm": "ed25519",
+    "public_key": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+    "value": "6tmbZ/V0O4SObkvI3p6F0rhcU1EkBoByhf78/PkHncotlB02y7nxff8Z/93FJoEIPPR+5PVyDg+nx2cFhqZMDw=="
+  },
+  "_expect": {
+    "result": "reject",
+    "reason": "signature-invalid",
+    "why": "Signed correctly, by the right key — over the SUPERSEDED three-field canonical. A verifier that still accepts the old shape leaves tools[] and by_hub outside the signature entirely. Published documentation taught this shape until 2026-08-28, so third-party implementations of it plausibly exist.",
+    "spec": "§7.3.2"
+  }
+}

@@ -1,0 +1,24 @@
+AIMarket Protocol is dual-licensed.
+
+Licensed under either of
+
+  * Apache License, Version 2.0 ...... see LICENSE-APACHE
+    (http://www.apache.org/licenses/LICENSE-2.0)
+  * MIT license ...................... see LICENSE-MIT
+    (http://opensource.org/licenses/MIT)
+
+at your option.
+
+Why both: MIT is the licence most implementers already have cleared internally, and
+Apache-2.0 carries an express patent grant that MIT does not. A specification is
+implemented by many independent parties who thereby step into the same patent claims,
+so the grant matters here in a way it does not for ordinary application code. Taking
+either licence is sufficient; nobody has to take both.
+
+CONTRIBUTION
+
+Unless you explicitly state otherwise, any contribution intentionally submitted for
+inclusion in this work by you, as defined in the Apache-2.0 licence, shall be dual
+licensed as above, without any additional terms or conditions.
+
+SPDX-License-Identifier: Apache-2.0 OR MIT

@@ -1,0 +1,19 @@
+{
+  "nonce": "rcpt_test001",
+  "product_id": "prod-001",
+  "capability_id": "translate.multi@v2",
+  "price_usd": 0.4,
+  "latency_ms": 8100,
+  "success": true,
+  "timestamp": "2020-01-01T00:00:00Z",
+  "signature": {
+    "algorithm": "ed25519",
+    "value": "ZM1yI5B1fj9pEBNM2tpmgmZDaCg1+VVw50NrgredPWaQe9ggCRumdaVGaXirDHbnPJCzIjYPDj+v9WhfiXreDQ=="
+  },
+  "_expect": {
+    "result": "reject",
+    "reason": "signature-invalid",
+    "why": "timestamp rewritten to an old date. It is inside the canonical, so tampering fails on the signature. Note what this vector does NOT test: a correctly signed receipt REPLAYED unchanged is signature-valid by construction, and can only be caught by nonce state the verifier keeps. See negative/README.md.",
+    "spec": "§7.3.3"
+  }
+}

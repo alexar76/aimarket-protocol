@@ -1,0 +1,19 @@
+{
+  "nonce": "rcpt_test001",
+  "product_id": "prod-001",
+  "capability_id": "translate.multi@v2",
+  "price_usd": 0.4,
+  "latency_ms": 8100,
+  "success": false,
+  "timestamp": "2026-08-28T09:00:50Z",
+  "signature": {
+    "algorithm": "ed25519",
+    "value": "ZM1yI5B1fj9pEBNM2tpmgmZDaCg1+VVw50NrgredPWaQe9ggCRumdaVGaXirDHbnPJCzIjYPDj+v9WhfiXreDQ=="
+  },
+  "_expect": {
+    "result": "reject",
+    "reason": "signature-invalid",
+    "why": "success was flipped. It is inside the seven-field canonical, so this must fail. Under the five-field canonical published before 2026-07-29 it would have passed, which means a failed invocation could be presented as a successful one.",
+    "spec": "§7.3.3"
+  }
+}
