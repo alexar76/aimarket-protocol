@@ -139,6 +139,11 @@ print("✓ all canonicals in this README match their vectors")
 2. **Field order is fixed.** The canonical is a concatenation, not a set. Reordering pairs,
    inserting whitespace, or omitting a pair whose value happens to be empty all change the
    signed bytes.
+3. **Number tokens are fixed.** `price_usd:0.0` is not `price_usd:0`. Copy the JSON number
+   token; do not parse it and print it again (§7.3.3).
+4. **`signature.version` is the integer `2` or it is absent.** The signed version is that
+   field, not a guess from `type` (§7.3.1). Any of the nine v2 keys, present and not null,
+   means the receipt required v2 (§7.3.4).
 
 ## Regenerating
 

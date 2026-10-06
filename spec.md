@@ -569,8 +569,9 @@ counterpart is `aimarket_escrow`.
 
 | Step | Caller | Endpoint / call | Effect |
 |------|--------|------------------|--------|
-| open | depositor | `POST /ai-market/v2/channel/open` → `openChannel(channelId, token, depositAmount)` | Transfers tokens to escrow, sets 24h expiry. |
+| open | depositor | `POST /ai-market/v2/channel/open` with `{"deposit_usd": <json number>}` → `openChannel(channelId, token, depositAmount)` | Transfers tokens to escrow, sets 24h expiry. The response carries `channel.channel_id`. |
 | debit | hub (signed by depositor) | `debitChannel(channelId, amount, receiptId, deadline, sig)` | Increments `usedAmount`, marks `receiptId` used, binds hub to channel on first call. |
+| close | depositor | `POST /ai-market/v2/channel/close` with `{"channel_id": "<id>"}` | HTTP request that asks the hub to submit `settleChannel`. It is not a second settlement rule. |
 | settle | depositor OR bound hub | `settleChannel(channelId)` | Pays `usedAmount` to bound hub, refunds remainder to depositor. |
 | refund | depositor only (and only before any debit) | `refundChannel(channelId, reason)` | Full refund (e.g. safety gate blocked). |
 | expire | anyone after expiry | `expireChannel(channelId)` | Same economics as settle — permissionless cleanup. |
@@ -712,11 +713,15 @@ signature will fail to verify.
 The signature object carried alongside the document is:
 
 ```json
-{ "algorithm": "ed25519", "public_key": "<base64>", "value": "<base64>" }
+{ "algorithm": "ed25519", "public_key": "<base64>", "value": "<base64>", "version": 2 }
 ```
 
 `public_key` MAY be omitted where the verifier already holds a pinned key for the signer
-(§2.2); `algorithm` MUST be `"ed25519"`.
+(§2.2); `algorithm` MUST be `"ed25519"`. `version` is the signed canonical's version. It
+MUST be the JSON integer `2` when the signature covers the v2 receipt canonical (§7.3.4).
+It MUST be omitted, or be any value other than `2`, when the signature covers only the v1
+canonical. Verifiers MUST read this field from the signature object. They MUST NOT infer
+the signed version from a sibling field, a header, or a request parameter.
 
 #### 7.3.2. Manifest canonical (five fields)
 
@@ -740,8 +745,12 @@ can rewrite per-peer `trust_score` and routing metadata the same way.
 nonce:{nonce}|product_id:{product_id}|capability_id:{capability_id}|price_usd:{price_usd}|timestamp:{timestamp}|success:{0|1}|latency_ms:{latency_ms}
 ```
 
-- `success` is serialized as the integer `1` or `0`, never as `true`/`false`.
+- `success` is serialized as the integer `1` or `0`, never as `true`/`false`. A missing
+  `success` MUST be serialized as `0`.
 - `latency_ms` defaults to `0` when absent.
+- `price_usd` and `latency_ms` MUST be copied as the exact JSON number token from the
+  document. `0.0` and `0` are different signed bytes. An implementation that parses the
+  number and prints it again is wrong when the token was `0.0`.
 - `nonce` and `timestamp` are what make a receipt non-replayable; both MUST be present.
 
 `success` and `latency_ms` MUST be inside the signature. An implementation that signs only
@@ -749,7 +758,10 @@ the first five fields will accept a receipt whose `success` was flipped from fal
 
 #### 7.3.4. Receipt canonical v2 (rejection-bearing receipts)
 
-A receipt that carries a rejection MUST use v2. v1 signs essentially nothing about a
+A receipt carries v2 content when any of the nine keys listed below is present and its
+value is not JSON `null`. That includes a rejection (`type` of `"rejection"`) and any
+receipt that carries even one of those keys without `type`. Such a receipt MUST be signed
+with `signature.version` of `2`. v1 signs essentially nothing about a
 rejection: on a refusal `price_usd`, `success` and `latency_ms` are all constant, so the
 reasoning the buyer's refund is argued from sits outside the signature.
 
@@ -767,15 +779,16 @@ type, channel_id, category, plugin, reason, verify_score, delivery_reasons, trac
 separators** `(",", ":")`. See §7.3.4.1 on ordering. **A key that is absent MUST be bound as JSON `null`, not omitted**,
 so that deleting a field changes the digest rather than passing unnoticed.
 
-Verifiers MUST determine the signed version from the receipt's own signature block, and the
-required version from the receipt's own content — not from a request parameter.
+Verifiers MUST determine the signed version from `signature.version` (§7.3.1), and the
+required version from the receipt's own content, as defined above — not from a request
+parameter.
 
-Where the two disagree — a receipt carrying v2 fields but signed at v1 — a verifier MAY
-still accept the signature for the fields it covers, because a peer that predates v2 emits
-exactly this and rejecting it outright would partition the federation. What a verifier MUST
-NOT do is treat the uncovered fields as authenticated: on such a receipt, `reason`,
-`verify_score`, `refunded`, `channel_id`, `trace_id` and `delivery_reasons` are present and
-**unsigned**, and any decision resting on them is resting on unauthenticated data.
+Where the two disagree — any of the nine keys is present and not null, but `signature.version`
+is not `2` — a verifier MAY still accept the signature for the v1 fields it covers, because
+a peer that predates v2 emits exactly this and rejecting it outright would partition the
+federation. What a verifier MUST NOT do is treat the nine keys as authenticated: every one
+of them that is present is **unsigned**, and any decision resting on it is resting on
+unauthenticated data.
 
 An implementation MUST therefore expose which v2 fields a given signature leaves uncovered,
 rather than returning a bare accept/reject. The reference implementation does this as
@@ -784,6 +797,11 @@ reason.
 
 An implementation that is not required to interoperate with pre-v2 peers SHOULD refuse such
 receipts outright.
+
+> **Clarified 2026-09-27.** `signature.version`, which keys make a receipt v2 content,
+> the exact JSON number token in the v1 canonical, and the missing-`success` default were
+> already decided by the test vectors. They are now written as normative text in §7.3.1,
+> §7.3.3 and §7.3.4. The signed bytes did not change.
 
 #### 7.3.4.1. Field order in the digest
 
@@ -865,6 +883,8 @@ unauthenticated HTTP request.
 | GET | `/ai-market/v2/manifest` | Federated catalog | v2 |
 | GET | `/ai-market/v2/search` | Federated NL search | v2 |
 | POST | `/ai-market/v2/invoke` | Federated invocation | v2 |
+| POST | `/ai-market/v2/channel/open` | Open a payment channel; transfers tokens into escrow (§6.1) | v2 |
+| POST | `/ai-market/v2/channel/close` | Ask the hub to settle that channel (§6.1) | v2 |
 | GET | `/ai-market/v2/verification/{nonce}` | Pay-on-Verified verdict lookup by receipt nonce | v2 |
 | POST | `/ai-market/v2/federation/announce` | Peer announcement | v2 |
 | GET | `/ai-market/v2/federation/peers` | List known peers | v2 |
