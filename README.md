@@ -15,7 +15,7 @@
 </p>
 <!-- /aicom-readme-badges -->
 
-> **Ecosystem:** [AICOM overview & live demos](https://modeldev.modelmarket.dev) · **Protocol version:** `2.0.0-draft` (the wire contract) · **Repository version:** `0.1.0` ([VERSION](VERSION)) — two axes, see [GOVERNANCE.md](GOVERNANCE.md#versioning--two-numbers-two-meanings) · **Community:** [Discord · Pollux](https://discord.gg/aimarket) · [Telegram · Castor](https://t.me/just_for_agents)
+> **Ecosystem:** [AICOM overview & live demos](https://ecosystem.modelmarket.dev/) · **Protocol version:** `2.0.0-draft` (the wire contract) · **Repository version:** `0.1.0` ([VERSION](VERSION)) — two axes, see [GOVERNANCE.md](GOVERNANCE.md#versioning--two-numbers-two-meanings) · **Community:** [Discord · Pollux](https://discord.gg/aimarket) · [Telegram · Castor](https://t.me/just_for_agents)
 
 **Status:** Draft — protocol `2.0.0-draft`, repository `0.1.0`  
 
