@@ -1,0 +1,24 @@
+{
+  "nonce": "rcpt_test001",
+  "product_id": "prod-001",
+  "capability_id": "translate.multi@v2",
+  "price_usd": 0.4,
+  "latency_ms": 8100,
+  "success": true,
+  "timestamp": "2026-08-28T09:00:50Z",
+  "signature": {
+    "algorithm": "ed25519",
+    "public_key": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+    "value": "WGZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmYBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+  },
+  "_pins": {
+    "ed25519": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+    "ml-dsa-65": "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"
+  },
+  "_expect": {
+    "result": "reject",
+    "reason": "small-order-key",
+    "why": "Signed under the identity key with R = base point, S = 1: valid for EVERY message under OpenSSL, tweetnacl and WebCrypto, and no private key exists. A verifier MUST refuse a small-order key or R (§7.3.7).",
+    "spec": "§7.3.7"
+  }
+}

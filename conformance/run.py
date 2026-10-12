@@ -36,6 +36,24 @@ if not sys.stdout.isatty():
 results: list[tuple[bool, str, str]] = []
 
 
+# Ed25519 points of small order (orders 1, 2, 4, 8; sign bit cleared), as libsodium checks them.
+# `cryptography` (OpenSSL) accepts, under such a key, a signature valid for EVERY message, and no
+# secret exists for these keys — so a key or R among them is refused before verifying. 2026-10-12.
+_ED25519_SMALL_ORDER = frozenset(bytes.fromhex(h) for h in (
+    "0000000000000000000000000000000000000000000000000000000000000000",
+    "0100000000000000000000000000000000000000000000000000000000000000",
+    "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+    "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+    "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+    "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+    "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+))
+
+
+def _ed25519_small_order(point: bytes) -> bool:
+    return len(point) == 32 and (point[:31] + bytes([point[31] & 0x7F])) in _ED25519_SMALL_ORDER
+
+
 def record(ok: bool, name: str, detail: str = "") -> None:
     results.append((ok, name, detail))
     mark = f"{GREEN}PASS{RESET}" if ok else f"{RED}FAIL{RESET}"
@@ -56,9 +74,10 @@ def _verifier():
 
     def verify(pub_b64: str, canonical: str, sig_b64: str) -> bool:
         try:
-            Ed25519PublicKey.from_public_bytes(base64.b64decode(pub_b64)).verify(
-                base64.b64decode(sig_b64), canonical.encode()
-            )
+            key, sig = base64.b64decode(pub_b64), base64.b64decode(sig_b64)
+            if _ed25519_small_order(key) or _ed25519_small_order(sig[:32]):
+                return False
+            Ed25519PublicKey.from_public_bytes(key).verify(sig, canonical.encode())
             return True
         except Exception:
             return False
@@ -157,10 +176,36 @@ def kind_of(filename: str) -> str | None:
 
 # ── vector checks ───────────────────────────────────────────────────
 
+def hybrid_verifier(verify):
+    """§7.3.8 policy over `verify` (Ed25519, §7.3.7 included). None without dilithium-py."""
+    try:
+        from dilithium_py.ml_dsa import ML_DSA_65
+    except ImportError:
+        return None
+
+    def check(sig: dict, canonical: str, pins: dict, require_pq: bool = False) -> bool:
+        if not verify(pins.get("ed25519", ""), canonical, sig.get("value", "")):
+            return False                                         # rule 1
+        if not sig.get("pq_value"):
+            return not require_pq                                # rules 2 and 5
+        if sig.get("pq_algorithm") != "ml-dsa-65":
+            return False
+        pinned = pins.get("ml-dsa-65")
+        if pinned and sig.get("pq_public_key") != pinned:
+            return False                                         # rule 4
+        try:
+            return bool(ML_DSA_65.verify(base64.b64decode(sig.get("pq_public_key", "")),
+                                         canonical.encode(), base64.b64decode(sig["pq_value"])))
+        except Exception:
+            return False                                         # rule 3, fail closed
+
+    return check
+
+
 def check_positive_vectors(verify) -> None:
     print("\nPositive vectors — these MUST verify")
     for name in ("manifest-signed.json", "receipt-signed.json", "receipt-v2-signed.json",
-                 "federation-announce-signed.json"):
+                 "federation-announce-signed.json", "receipt-hybrid-signed.json"):
         path = VECTORS / name
         if not path.exists():
             record(False, name, "file missing")
@@ -170,6 +215,13 @@ def check_positive_vectors(verify) -> None:
         sig = (doc.get("signature") or {}).get("value", "")
         ok = bool(sig) and verify(TEST_PUBKEY_B64, CANONICALS[kind](doc), sig)
         record(ok, name, "" if ok else "signature did not verify against the documented canonical")
+        if (doc.get("signature") or {}).get("pq_value"):
+            hybrid = hybrid_verifier(verify)
+            if hybrid is None:
+                skip(f"{name} — ML-DSA-65 half", "dilithium-py not installed")
+            else:
+                hok = hybrid(doc["signature"], CANONICALS[kind](doc), doc.get("_pins", {}), require_pq=True)
+                record(hok, f"{name} — hybrid (§7.3.8)", "" if hok else "ML-DSA-65 half did not verify")
 
         if kind == "receipt":
             # A positive vector must be unambiguous: the version it is signed at must be the
@@ -219,6 +271,38 @@ def check_negative_vectors(verify) -> None:
             ok = self_consistent and not against_pin
             record(ok, path.name, "rejected: signer is not the pinned key" if ok else
                    "vector is not exercising what it claims")
+            continue
+
+        if expect.get("reason") == "small-order-key":
+            # Verified against the key the document carries — the point is that a strict
+            # verifier refuses it even then, while the bare library accepts it (§7.3.7).
+            embedded = (doc.get("signature") or {}).get("public_key", "")
+            strict = bool(sig) and verify(embedded, CANONICALS[kind](doc), sig)
+            try:
+                from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+                Ed25519PublicKey.from_public_bytes(base64.b64decode(embedded)).verify(
+                    base64.b64decode(sig), CANONICALS[kind](doc).encode())
+                permissive = True
+            except Exception:
+                permissive = False
+            record(not strict, path.name,
+                   ("rejected (the bare library accepts it)" if permissive else "rejected")
+                   if not strict else "ACCEPTED — a small-order key signs every message")
+            continue
+
+        if expect.get("reason", "").startswith("pq-"):
+            hybrid = hybrid_verifier(verify)
+            if hybrid is None:
+                skip(path.name, "dilithium-py not installed")
+                continue
+            canonical = CANONICALS[kind](doc)
+            pins = doc.get("_pins", {})
+            ed_valid = bool(sig) and verify(pins.get("ed25519", ""), canonical, sig)
+            accepted = hybrid(doc.get("signature") or {}, canonical, pins,
+                              require_pq=bool(expect.get("require_pq")))
+            ok = ed_valid and not accepted
+            record(ok, path.name, "rejected (Ed25519 half valid)" if ok else
+                   ("ACCEPTED — the PQ layer is decoration" if accepted else "vector is not exercising the PQ layer"))
             continue
 
         accepted = bool(sig) and verify(TEST_PUBKEY_B64, CANONICALS[kind](doc), sig)
