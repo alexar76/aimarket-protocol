@@ -17,6 +17,7 @@ flowchart TB
   classDef client fill:#164e63,stroke:#22d3ee,color:#ecfeff,stroke-width:2px
   classDef chain fill:#3f1d0f,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
   classDef peer fill:#1f2937,stroke:#9ca3af,color:#f3f4f6,stroke-width:1px
+  classDef seller fill:#04261d,stroke:#2ef2b0,color:#ecfdf5,stroke-width:2px
   classDef store fill:#111827,stroke:#6b7280,color:#d1d5db,stroke-dasharray:4 2
 
   subgraph ACTORS["Actors"]
@@ -131,6 +132,11 @@ flowchart TB
     CH_DEBIT --> CH_SOL
   end
 
+  subgraph SELLERS["Direct sellers · x402"]
+    direction LR
+    S_ESIM["eSIM operator kit<br/>quote via Hub · order paid to the seller<br/>signed delivery and refund receipts"]
+  end
+
   subgraph PEERS["Federation network"]
     direction LR
     PH2["Peer hub 2"]
@@ -174,6 +180,9 @@ flowchart TB
   H_API -->|"federated route"| PH2
   H_API -->|"federated route"| PH3
   P_INV --> AR_FAC
+  S_ESIM -->|"node or own hub · signed offers"| H_API
+  AGT -->|"x402 order · refund"| S_ESIM
+  S_ESIM -.->|"buyer brings the signed receipt · deliveries_30d"| P_REP
 
   class P_WELL,P_MAN,P_SRCH,P_INV,P_CH,P_REP,P_SIG protocol
   class F_IDEA,F_PIPE,F_ART,F_GW,F_WELL factory
@@ -182,6 +191,7 @@ flowchart TB
   class C_SDK,C_WGT,C_DESK,C_EXT client
   class CH_OPEN,CH_DEBIT,CH_CLOSE,CH_EVM,CH_SOL chain
   class PH2,PH3 peer
+  class S_ESIM seller
   class F_DB,H_DB,M_DB store
 ```
 
@@ -198,6 +208,7 @@ flowchart TB
 | **HEPHAESTUS** | Capability-chain forge — price a graph from the live catalogue before spending; signed bill of materials | [`hephaestus/`](https://github.com/alexar76/hephaestus) · [studio](https://modelmarket.dev/studio) |
 | **Oracles** | Signed verifiable math — randomness, VDF, consensus, reputation | [`oracles/`](https://github.com/alexar76/oracles) (satellite) |
 | **Physical oracles** | Attested sensor readings + statistical plausibility verify | `gaia/` (satellite) |
+| **Direct sellers** | Real goods sold seller-direct over x402: quote through the Hub, order paid to the seller's wallet, refunds; signed delivery and refund receipts the Hub counts as `deliveries_30d` | [`esim-kit/`](https://github.com/alexar76/esim-operator-kit) (satellite) |
 | **AI Service Mesh** | Agent registry, mesh orchestration, escrow, activity | `ai-service-mesh/` |
 | **Clients** | Human apps and autonomous agents | `aimarket-sdks/`, `desktop-integrations/`, `aimarket-widget/` |
 | **Settlement** | USDT/USDC channels, escrow contracts | `contracts/` |
@@ -210,6 +221,10 @@ The **[oracles](https://github.com/alexar76/oracles)** monorepo ships **17 oracl
 
 **GAIA** (`gaia/` satellite, port `:9320`) is a **physical-world oracle gateway** — the third oracle class alongside the mathematical oracles (above) and the cognitive Metis tier. It sells **virtual IoT sensors** as AIMarket capabilities: each reading is Ed25519-attested and passes a statistical plausibility check before settlement, over the same discover → channel → invoke → settle loop. Deep doc: [`docs/iot-physical-oracles.md`](https://github.com/alexar76/aicom/blob/main/docs/iot-physical-oracles.md).
 
+
+### Direct sellers (eSIM operator kit)
+
+The **[eSIM operator kit](https://github.com/alexar76/esim-operator-kit)** sells a good people use every day — travel eSIMs — to people and to AI agents. Agents find it through the Hub (`esim.quote@v1`, free, routed) and pay the seller's own `/order` over x402 (USDC on Base): the money never passes through a hub. Every delivery and every refund carries a receipt signed with the seller's provider key, published as `provider_pubkey` in the signed manifest; a buyer may bring it to the Hub (`POST /ai-market/v2/reputation/deliveries`), which checks the transfer on chain and counts a confirmed delivery without keeping amounts or addresses in the clear. Operators join with one command (`./onboard.sh`), as a federation node or as their own hub. Live demo: [esim.modelmarket.dev](https://esim.modelmarket.dev) · guides: [esim.modelmarket.dev/kit](https://esim.modelmarket.dev/kit).
 ---
 
 ## 2. Planes: commerce vs control
