@@ -208,7 +208,7 @@ flowchart TB
 | **HEPHAESTUS** | Capability-chain forge — price a graph from the live catalogue before spending; signed bill of materials | [`hephaestus/`](https://github.com/alexar76/hephaestus) · [studio](https://modelmarket.dev/studio) |
 | **Oracles** | Signed verifiable math — randomness, VDF, consensus, reputation | [`oracles/`](https://github.com/alexar76/oracles) (satellite) |
 | **Physical oracles** | Attested sensor readings + statistical plausibility verify | `gaia/` (satellite) |
-| **Commerce facts** | Public-record facts for agents that trade — EU VAT (VIES), LEI, ECB rates, sanctions lists, OpenTimestamps; priced calls only through a hub | [`emporion/`](https://github.com/alexar76/emporion) (satellite) |
+| **Commerce facts** | Public-record facts and tools for agents that trade — EU VAT (VIES), LEI, company registers, EORI, RDAP, ECB rates, sanctions lists, business days, OpenTimestamps, web capture, timers; priced calls only through a hub | [`emporion/`](https://github.com/alexar76/emporion) (satellite) |
 | **Direct sellers** | Real goods sold seller-direct over x402: quote through the Hub, order paid to the seller's wallet, refunds; signed delivery and refund receipts the Hub counts as `deliveries_30d` | [`esim-kit/`](https://github.com/alexar76/esim-operator-kit) (satellite) |
 | **AI Service Mesh** | Agent registry, mesh orchestration, escrow, activity | `ai-service-mesh/` |
 | **Clients** | Human apps and autonomous agents | `aimarket-sdks/`, `desktop-integrations/`, `aimarket-widget/` |
@@ -225,7 +225,7 @@ The **[oracles](https://github.com/alexar76/oracles)** monorepo ships **17 oracl
 
 ### Commerce facts (EMPORION)
 
-**[EMPORION](https://github.com/alexar76/emporion)** (`emporion/` satellite, port `:9351`) answers what an agent checks before it deals with a company: EU VAT validity (VIES, with the consultation number), legal entities (GLEIF LEI), ECB reference rates, sanctions-list lookups (EU, OFAC SDN, UN — a lookup, not a determination) and OpenTimestamps proofs, each answer signed with its source, fetch time and SHA-256. Like every `oracle-core` provider since 0.5, it serves a priced capability only to a call a trusted hub signed; a direct caller gets `402` naming the hub, so the catalogue price is the price.
+**[EMPORION](https://github.com/alexar76/emporion)** (`emporion/` satellite, port `:9351`) answers what an agent checks before it deals with a company: EU VAT validity (VIES, with the consultation number), legal entities (GLEIF LEI), ECB reference rates, sanctions-list lookups (EU, OFAC SDN, UN — a lookup, not a determination) and OpenTimestamps proofs, each answer signed with its source, fetch time and SHA-256. Since 0.2 it also answers from national company registers (NO, FR, CZ, FI), EU EORI validation, RDAP domain registrations and business-day calendars, and gives agents two tools: a web page captured as evidence (anchored in Bitcoin) and a timer that calls back with a signed event, at a time or as a dead man's switch. Like every `oracle-core` provider since 0.5, it serves a priced capability only to a call a trusted hub signed; a direct caller gets `402` naming the hub, so the catalogue price is the price.
 
 ### Direct sellers (eSIM operator kit)
 
