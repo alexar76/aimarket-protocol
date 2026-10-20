@@ -97,6 +97,7 @@ no canonical form, and `413 mandate_malformed` when it is larger than the hub ac
 | `limits.perCall`, `limits.perDay` | Required, integers ≥ 1. |
 | `limits.total` | Optional integer ≥ 1. Absent: the chain's other limits still apply. |
 | `limits.perProductPerDay` | Optional integer ≥ 1, applied per `product_id`. |
+| `limits.approvalAbove` | Optional integer ≥ 1. A call that would reserve more than this waits for an owner's approval (§5.6). It moves no counter. |
 | `subcontract` | Optional. Absent means calls made under this mandate may not open a subcontracting allowance (§6.2). `perCallAllowance` ≥ 1 and `maxDepth` 1–3, both integers. |
 | `parent` | Optional SRI digest (`sha256-<base64>`) of the parent mandate (§3.4). |
 | numbers | Every number in the document MUST be an integer, as in AWR/2, within the I-JSON range ±(2^53 − 1). |
@@ -133,7 +134,8 @@ third key. For each link, child → parent, a verifier MUST check that:
 4. every child `scope` pattern is covered by some parent pattern — `*` covers everything,
    `x.*` covers anything starting with `x.`, and an exact id covers only itself;
 5. every child limit is ≤ the parent's same limit, and a limit the parent sets is also set
-   by the child;
+   by the child. This includes `approvalAbove`: a child keeps its parent's threshold and may
+   only lower it;
 6. if the child has `subcontract`, the parent has it too, with a
    `perCallAllowance` and `maxDepth` at least as large.
 
@@ -315,6 +317,78 @@ Alternatively the root's funding account may revoke with its `X-API-Key` and
 `{"digest"}` alone. That is the owner's kill switch when they no longer hold a key.
 Revoking a mandate revokes everything below it. Holds already taken are settled normally.
 
+### 5.6 Owner approval above a threshold
+
+`limits.approvalAbove` keeps a person in the loop for large calls without making them sign
+every small one. A hub that implements it MUST NOT reserve money for a call whose amount,
+counted as `perCall` counts it (§5.3), exceeds the smallest `approvalAbove` in the chain,
+unless an owner of the funding account has approved **that call**. The threshold applies to
+the price and routing fee of the call; a subcontracting allowance is bounded by
+`subcontract.perCallAllowance`, as for `perCall`.
+
+**The request.** Instead of reserving, the hub opens an approval request and answers
+`402 approval_required` with it:
+
+```json
+{
+  "error": "approval_required", "limit": "approvalAbove", "mandate": "sha256-…",
+  "approval": {
+    "approval_id": "apr_…", "status": "pending", "mandate": "sha256-…",
+    "agent": "did:key:…", "capability_id": "…", "product_id": "…", "source_hub": "local",
+    "body_sha256": "<hex SHA-256 of the exact request body>",
+    "amount_usd": 12.0, "max_usd": 12.13, "max_micro": 12130000, "threshold_usd": 10.0,
+    "created_at": "…Z", "expires_at": "…Z", "url": "https://hub/ai-market/v2/mandates/approvals/apr_…"
+  }
+}
+```
+
+A request names the leaf digest and the SHA-256 of the exact request body the agent's proof
+signed. `max_micro` is the ceiling the owner approves: for a call the hub routes to a peer it
+includes the routing fee the hub will reserve right after the price. The same call asked
+again while a request is pending gets the same request. A hub SHOULD bound the pending
+requests per leaf mandate (`429 approval_queue_full`) and MUST expire them (the reference
+hub: 24 hours).
+
+**The answer.** `POST /ai-market/v2/mandates/approvals/{approval_id}`:
+
+```json
+{ "decision": "approve", "by": "did:key:…owner", "t": 1790000000, "n": "…", "s": "…" }
+```
+
+`by` MUST be an owner DID linked to the funding account (§4). `s` signs
+
+```
+aimarket-mandate-approval/1
+<hub base URL>
+<approval_id>
+<approve | deny>
+<leaf digest>
+<body_sha256>
+<max_micro>
+<t>
+<n>
+```
+
+with the same freshness and nonce rules as §5.1. Approving spends the account's money, so the
+API key alone MUST NOT approve: a leaked key, or an agent that holds one, would otherwise
+approve itself. `{"decision": "deny"}` with the funding account's `X-API-Key` is accepted, as
+revocation is (§5.5). A hub MUST refuse a signature over any `max_micro` but the request's
+current one.
+
+**The call.** Once approved, the agent sends the same request again — the same bytes, under a
+fresh request proof. The hub matches it to the approval by leaf digest and body hash, and uses
+the approval in one conditional statement together with the reservation, so two copies of the
+call cannot both spend on one signature. An approval covers one call: released with the
+reservation if the call does not happen, spent with it if it does. A denied request stands
+until it expires (`402 approval_denied`); asking again would turn a refusal into a nag.
+
+Two signatures are always needed for a call above the threshold — the owner's over the call
+and the agent's over the request. An owner's approval alone never makes the hub spend.
+
+`GET /ai-market/v2/mandates/approvals?status=pending` with the funding account's key lists
+what waits for its owners; `GET /ai-market/v2/mandates/approvals/{approval_id}` reads one
+request (the id is an unguessable capability; the funding account is not in the answer).
+
 ## 6. Subcontracting (SUB/1)
 
 ### 6.1 Job context
@@ -472,6 +546,12 @@ the providers of the job.
 | 402 | `mandate_required` | The account requires a mandate and none was presented. |
 | 402 | `mandate_unfunded` | The root issuer has no linked funding account on this hub. |
 | 402 | `mandate_limit` | A limit would be exceeded; `limit` and `mandate` name which. |
+| 402 | `approval_required` | The call is over `approvalAbove`; `approval` is the request an owner must answer (§5.6). |
+| 402 | `approval_denied` | An owner denied this exact call; `approval` says until when it stands. |
+| 429 | `approval_queue_full` | The leaf mandate already has as many calls waiting as the hub allows. |
+| 404 | `approval_unknown` | No approval request with that id. |
+| 409 | `approval_closed` | The request was already answered, used or expired. |
+| 409 | `approval_changed` | The request's `max_micro` changed after it was read; sign the current one. |
 | 403 | `mandate_invalid` | Unknown, expired, revoked, broken chain, wrong audience. |
 | 403 | `mandate_scope` | The capability is outside the leaf's scope. |
 | 403 | `job_invalid` | Bad or expired job token, unknown or finished node, or a grant sent together with another payment. |
@@ -500,6 +580,10 @@ the providers of the job.
   read-then-write. That is the same invariant the credits ledger already holds for balances.
 - **Privacy.** Providers learn the agent and principal DIDs, never the funding account.
   Usage figures are readable only by the chain's keys and the funding account.
+- **Approval.** An approval is bound to one request's bytes, one mandate and one ceiling, and
+  is used together with the reservation it permits. Older hubs refuse a mandate carrying
+  `approvalAbove` as an unknown limit, which fails closed: such a mandate spends nowhere that
+  cannot hold its owner in the loop.
 
 ## 9. Test vectors
 
