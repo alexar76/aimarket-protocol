@@ -13,6 +13,7 @@ Run them: `python3 ../../conformance/run.py`
 | `manifest-tampered-price.json` | A price inside `tools[]` was rewritten; `tools_hash` is signed | §7.3.2 |
 | `manifest-tampered-by-hub.json` | A peer's `trust_score` was inflated; `by_hub_hash` is signed | §7.3.2 |
 | `manifest-legacy-3field-canonical.json` | Correctly signed by the right key — over the **superseded** canonical | §7.3.2 |
+| `manifest-signature-bare-string.json` | Valid signature bytes published as a bare string, not the signature **object** | §7.3.1 |
 | `receipt-flipped-success.json` | `success` flipped false→true | §7.3.3 |
 | `receipt-tampered-latency.json` | `latency_ms` rewritten to fake an SLA | §7.3.3 |
 | `receipt-stale-timestamp.json` | `timestamp` rewritten | §7.3.3 |

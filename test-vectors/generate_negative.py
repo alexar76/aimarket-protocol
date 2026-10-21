@@ -103,6 +103,20 @@ def main() -> None:
         "§7.3.2",
     )
 
+    # ---- manifest: the right bytes in the wrong shape -------------------------
+    bare = copy.deepcopy(m)
+    bare["signature"] = m["signature"]["value"]
+    write(
+        "manifest-signature-bare-string.json", bare,
+        "signature-not-an-object",
+        "The base64 value is a valid Ed25519 signature over the right canonical, published as "
+        "a bare string instead of the §7.3.1 object. Without `algorithm` the verifier cannot "
+        "know what it is checking, and a verifier that calls signature.value on a string "
+        "crashes instead of refusing. Both independent implementations that knocked on "
+        "modelmarket.dev in October 2026 published this shape.",
+        "§7.3.1",
+    )
+
     # ---- receipt: outcome flipped -------------------------------------------
     r = load("receipt-signed.json")
     flipped = copy.deepcopy(r)

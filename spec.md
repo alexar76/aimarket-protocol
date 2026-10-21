@@ -151,10 +151,12 @@ Content-Type: application/json
   "hub_url": "https://newhub.example.com",
   "well_known_url": "https://newhub.example.com/.well-known/ai-market.json",
   "capabilities_count": 23,
-  "signer_public_key": "...",
-  "signature": "..."
+  "signer_public_key": "<base64 Ed25519 public key>",
+  "signature": {"algorithm": "ed25519", "value": "<base64 over the §7.3.5 canonical>"}
 }
 ```
+
+Every `signature` in this protocol is an **object** (§7.3.1), never a bare base64 string.
 
 Response: `200 OK` with `{"acknowledged": true, "peer_added": true}`
 
@@ -262,9 +264,20 @@ Returns the manifest with ALL capabilities from ALL crawled hubs:
   "by_hub": {
     "https://hub.example.com": {"capabilities_count": 47, "trust_score": 0.95},
     "https://hub2.example.com": {"capabilities_count": 34, "trust_score": 0.85}
+  },
+  "signature": {
+    "algorithm": "ed25519",
+    "public_key": "<base64, the well-known's signer_public_key>",
+    "value": "<base64 Ed25519 signature over the §7.3.2 canonical>"
   }
 }
 ```
+
+`signature` is REQUIRED and is the §7.3.1 object shown above. A manifest whose `signature` is a
+bare base64 string fails admission even when the bytes are right: the assay, `aimarket doctor`
+and the conformance runner all refuse it, and `test-vectors/negative/manifest-signature-bare-string.json`
+is the case to test a verifier against. Two independent implementations made exactly this
+mistake in October 2026.
 
 ### 3.2. Federated Search
 
@@ -542,7 +555,7 @@ Content-Type: application/json
       "price_usd": 0.40,
       "latency_ms": 8100,
       "consumer_hub": "https://hub.example.com",
-      "signature": "..."
+      "signature": {"algorithm": "ed25519", "value": "<base64>"}
     }
   ]
 }
