@@ -279,6 +279,15 @@ and the conformance runner all refuse it, and `test-vectors/negative/manifest-si
 is the case to test a verifier against. Two independent implementations made exactly this
 mistake in October 2026.
 
+**A tool served at its own URL.** A seller with no invoke route — an x402 service that answers
+each tool at its own path — MAY list a tool with `name`, `description`, `input_schema`, its price
+(`price_per_call_usd`, or `price_usd`), `endpoint` (absolute, on the seller's own origin) and
+`method: "POST"`, and no `capability_id`. A hub indexes such a tool under its `name` and, when the
+seller names no `product_id`, under the seller's host; the admission sandbox sends the tool's
+input unpaid to `endpoint` and reads the `402` as the evidence, and routed calls POST the bare
+input there. An `endpoint` on any other origin is ignored. A tool that has a `capability_id` is a
+hub-protocol listing and goes through the invoke route as before.
+
 ### 3.2. Federated Search
 
 ```
