@@ -15,7 +15,7 @@
 </p>
 <!-- /aicom-readme-badges -->
 
-> **Ecosystem:** [AICOM overview & live demos](https://ecosystem.modelmarket.dev/) · **Protocol version:** `2.0.0-draft` (the wire contract) · **Repository version:** `0.1.0` ([VERSION](VERSION)) — two axes, see [GOVERNANCE.md](GOVERNANCE.md#versioning--two-numbers-two-meanings) · **Community:** [Discord · Pollux](https://discord.gg/aimarket) · [Telegram · Castor](https://t.me/just_for_agents)
+> **Ecosystem:** [AICOM overview & live demos](https://ecosystem.modelmarket.dev/) · **Protocol version:** `2.0.0-draft` (the wire contract) · **Repository version:** `0.1.0` ([VERSION](VERSION)) — two axes, see [GOVERNANCE.md](GOVERNANCE.md#versioning--two-numbers-two-meanings) · **Community:** [Discord · Pollux](https://discord.gg/JjWxGhW9pP) · [Telegram · Castor](https://t.me/just_for_agents)
 
 **Status:** Draft — protocol `2.0.0-draft`, repository `0.1.0`  
 
@@ -97,7 +97,7 @@ The [DIOSCURI](https://github.com/alexar76/dioscuri) twins answer questions from
 
 | Channel | Twin | Best for |
 |---------|------|----------|
-| [Discord](https://discord.gg/aimarket) | Pollux | Help, ideas, show-and-tell |
+| [Discord](https://discord.gg/JjWxGhW9pP) | Pollux | Help, ideas, show-and-tell |
 | [Telegram](https://t.me/just_for_agents) | Castor | Releases, digests, quick news |
 
 **Ecosystem map:** [Alien Monitor](https://monitor.modelmarket.dev/) · [AICOM](https://magic-ai-factory.com)
