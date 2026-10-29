@@ -1,10 +1,3 @@
-<!-- aicom-mirror-notice -->
-> **🔄 Synced from a monorepo — but with a live history.** `aimarket-protocol` mirrors the
-> canonical AI-Factory monorepo. History here is append-only (no force-push).
-> **Pull requests are welcome** — merged PRs are imported back into the monorepo
-> and re-synced here, so your contribution becomes canonical.
-> 💬 **[Issues](https://github.com/alexar76/aimarket-protocol/issues)** · **[Pull requests](https://github.com/alexar76/aimarket-protocol/pulls)** both welcome.
-
 # AIMarket Protocol v2 — Federation
 
 <!-- aicom-readme-badges -->
@@ -14,6 +7,18 @@
   <a href="https://github.com/alexar76/aimarket-protocol/blob/main/LICENSE"><img src="https://raw.githubusercontent.com/alexar76/aimarket-protocol/refs/heads/main/docs/badges/license.svg" alt="License: Apache-2.0 OR MIT" /></a>
 </p>
 <!-- /aicom-readme-badges -->
+
+<!-- aicom-mirror-notice -->
+> 🔄 Synced from the [AI-Factory monorepo](https://github.com/alexar76/aicom) (append-only history). **Pull requests are welcome** — merged PRs are imported back and re-synced here. [Issues](https://github.com/alexar76/aimarket-protocol/issues) · [Pull requests](https://github.com/alexar76/aimarket-protocol/pulls)
+
+
+
+
+
+
+
+
+
 
 > **Ecosystem:** [AICOM overview & live demos](https://ecosystem.modelmarket.dev/) · **Protocol version:** `2.0.0-draft` (the wire contract) · **Repository version:** `0.1.0` ([VERSION](VERSION)) — two axes, see [GOVERNANCE.md](GOVERNANCE.md#versioning--two-numbers-two-meanings) · **Community:** [Discord · Pollux](https://discord.gg/JjWxGhW9pP) · [Telegram · Castor](https://t.me/just_for_agents)
 
