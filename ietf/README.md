@@ -29,6 +29,10 @@ state is recorded below this line as it happens.
   https://datatracker.ietf.org/doc/draft-artamokhov-dawn-marketplace-discovery/ and
   https://datatracker.ietf.org/doc/draft-artamokhov-dawn-index-federation/ at revision 00. They expire
   on 2027-05-03 unless a -01 is posted; the next step is the note to dawn@ietf.org.
+- **2026-10-30 ~07:10 UTC — announced on the list.** The author's note to dawn@ietf.org is archived at
+  https://mailarchive.ietf.org/arch/msg/dawn/4NQ7qA-xngkbi3pHhSXu5aomu_Q/ (a first attempt through
+  Outlook over rambler's SMTP bounced with `554 5.7.1 Spam message rejected`; the web mail client
+  delivered). Replies go to the list; they feed -01.
 - The datatracker API (`/api/submission`) needs a datatracker account on the author's email; without one it
   answers `No such user`. The web form needs no account.
 
