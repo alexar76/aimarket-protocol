@@ -63,6 +63,12 @@ For a single map of how Factory, Hub, Mesh, clients, plugins, and on-chain settl
 GET /.well-known/ai-market.json
 ```
 
+> **Second spelling (since 2026-10-30).** The Internet-Drafts in [`ietf/`](ietf/) name this
+> resource `/.well-known/agent-marketplace` and its members `catalogue_url` (= `manifest_url`),
+> `signature_profile` (= `ed25519-pipe-2`) and `peers` as an array of discovery-document URIs.
+> The reference hub serves both documents from one source, and its crawler reads either shape.
+> This path and these member names remain the wire contract; the draft names are a proposal.
+
 Response (v2 adds `hub_version`, `federation` and `peers`):
 
 ```json
@@ -137,6 +143,7 @@ A hub crawler follows this algorithm:
 |--------|-------|---------|
 | `User-Agent` | `AIMarketHub/2.0.0` | Identifies crawler |
 | `X-AIMarket-Crawler` | `{hub_url}` | Source hub URL |
+| `Agent-Marketplace-Crawler` | `{hub_url}` | The same value under the Internet-Draft's name (no `X-`, RFC 6648); sent alongside, accepted alongside |
 | `If-None-Match` | `{etag}` | Conditional GET (304 support) |
 
 ### 2.3. Federation Announce Endpoint

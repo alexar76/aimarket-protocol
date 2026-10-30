@@ -1,0 +1,5 @@
+
+# kramdown-rfc reference cache (ietf/)
+.refcache/
+ietf/build/
+ietf/.venv-xml2rfc/

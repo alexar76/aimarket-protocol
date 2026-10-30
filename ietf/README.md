@@ -1,71 +1,95 @@
-# IETF Internet-Draft
+# IETF Internet-Drafts
 
-`draft-aimarket-agent-marketplace-federation-00.md` — the federated discovery and admission
-mechanism of this protocol, written as an Internet-Draft for submission as an **independent
-submission**.
+Two drafts, split from the single federation draft that lived here until 2026-10-30, so that
+each lands in the scope of the body that owns its layer:
+
+| File | Subject | Category | Where it is aimed |
+|---|---|---|---|
+| `draft-AUTHOR-dawn-marketplace-discovery-00.md` | the discovery document at a well-known URI, the signed catalogue, key pinning, the `ed25519-pipe-2` signature profile (= spec §2.1, §7.3.1–7.3.2, §7.3.7) | Standards Track | inside the DAWN WG charter: public properties of an AI resource + integrity of discovery information |
+| `draft-AUTHOR-dawn-index-federation-00.md` | crawl, reciprocal identification, announcement, admission (pending ≠ admitted), catalogue preview (= spec §2.2–2.6) | Experimental | input to DAWN's gap analysis — `draft-jimenez-dawn-discovery-landscape` §6.2 names "no interoperable federation between directories" |
+
+The IETF formed the **DAWN working group** (Discovery of Agents, Workloads, and Named
+entities) on 2026-10-22: chairs Dapeng Liu and Frank Brockners, AD Éric Vyncke, list
+`dawn@ietf.org`. Its phase-one charter covers initial discovery and integrity and excludes
+catalogues, Internet-wide search, identity and trust — which is why the material is split as
+above rather than submitted as one document.
 
 ## Status
 
-**Not submitted.** The text is complete and the placeholders below need real values first.
-This directory exists so that the draft is reviewable and versioned alongside the
-implementation it describes, which is the part reviewers ask about.
-
-## Before submitting — replace these
+**Not submitted.** Both texts are complete; the placeholders below need real values first.
 
 | Placeholder | Value |
 |---|---|
-| `AUTHOR` in `docname` | Your surname, lowercase, no spaces — the file becomes `draft-<surname>-agent-marketplace-federation-00` |
+| `AUTHOR` in `docname` (both files, and in each file's reference to the other) | Surname, lowercase, no spaces — the files become `draft-<surname>-dawn-marketplace-discovery-00` and `draft-<surname>-dawn-index-federation-00` |
 | `A. AUTHOR` / `AUTHOR NAME` | Initials and full name |
 | `AUTHOR@EXAMPLE.COM` | A working email; it is published |
 | `organization: Independent` | Keep for an individual submission |
 
-## Build it
+Submit the discovery draft first: the federation draft references it by name.
 
-```bash
-gem install kramdown-rfc2629
-kramdown-rfc draft-aimarket-agent-marketplace-federation-00.md > draft.xml
-# then render locally, or upload the .xml at https://datatracker.ietf.org/submit/
-```
+## Build
 
-`ipr: trust200902` in the front matter is what generates the "Status of This Memo" and
-Copyright Notice. **Do not hand-write that boilerplate** — a draft missing or mangling it is
-rejected outright, with no fixup by the Secretariat.
+`./build.sh` renders every `draft-*.md` here to XML, text and HTML in `ietf/build/`
+(git-ignored). It uses `kramdown-rfc` from the Homebrew Ruby (`/opt/homebrew/opt/ruby`,
+Ruby ≥ 3.2 — the system Ruby 2.6 cannot run it) and installs `xml2rfc` into
+`ietf/.venv-xml2rfc` on first run. Both drafts built on 2026-10-30 with no errors and one cosmetic
+width warning on the example document.
+
+Without the toolchain, https://author-tools.ietf.org/ accepts the `.md` directly, returns XML,
+text and HTML, and runs `idnits`. Either way the XML is what goes to
+https://datatracker.ietf.org/submit/.
+
+`ipr: trust200902` in the front matter generates the "Status of This Memo" and Copyright
+Notice. **Do not hand-write that boilerplate** — a draft missing or mangling it is rejected
+outright.
+
+## Timing
+
+IETF 127 is 14–20 November 2026 (San Francisco). The Internet-Draft cut-off is the Monday two
+weeks before the meeting — **2 November 2026, 23:59 UTC** — check "Important dates" on the
+datatracker meeting page. Between the cut-off and the end of the meeting no drafts are
+accepted; from 21 November submissions reopen. Missing the cut-off costs three weeks, nothing
+more.
+
+After submission: ten lines to `dawn@ietf.org` (subscribe at
+https://mailman3.ietf.org/mailman3/lists/dawn.ietf.org/) naming both drafts and the live
+instance. No presentation slot is needed; the archive of the list and the datatracker entry
+are the durable record. `draft-kay-dawn-use-cases-01` §8 carries "TBD" slots for use-case
+classes; "cooperating capability indexes exchanging catalogues" is the one these drafts fill.
 
 ## What to expect
 
-- **No working group adoption is required.** Anyone may submit `draft-<surname>-<subject>-00`
-  themselves. Only names beginning `draft-ietf-<wg>-` need chair approval.
-- **Drafts expire after 185 days.** Expiry is normal and not a rejection; you repost a `-01`.
+- **No working group adoption is required** to submit. Anyone may submit
+  `draft-<surname>-<subject>-00`. Only names beginning `draft-ietf-<wg>-` need chair approval.
+- **Drafts expire after 185 days.** Expiry is normal and not a rejection; repost a `-01`.
 - Submitting is not publishing. It makes the text citable, dated and public, which is the
   point at this stage.
-
-## Two things worth knowing before spending the effort
-
-**The space is crowded.** A survey while preparing this found roughly ten active drafts
-directly adjacent to agent discovery and agent-to-agent interaction. A draft that does not
-say plainly what it does *not* specify — payment, identity, reputation, invocation — will be
-read as one more entrant in a race rather than as the layer between the entrants. Section 1.1
-exists for that reason and should not be trimmed.
-
-**The Implementation Status section is the strongest part and it contains an admission.**
-{{RFC7942}} sections are read closely, and this one says the network is not yet
-multi-operator. That is a genuine weakness and stating it is deliberate: the mechanisms are
-running, the property they exist to produce has not been demonstrated between independent
-parties, and a reviewer who discovers that themselves will discount everything else in the
-document. Removing the sentence would be the single most damaging edit available.
+- **The space is crowded.** Roughly a dozen individual drafts sit adjacent to agent discovery
+  (AIDIP, ADP, DNS-AID, AID, ARDP, AGNTCY ADS, …). Each draft's §1.1 says plainly what it does
+  *not* specify; do not trim it.
+- **The Implementation Status sections contain an admission.** Both say in bold that no
+  independent implementation exists. A reviewer who discovers that unaided will discount
+  everything else; removing the sentence would be the single most damaging edit available.
 
 ## Relationship to the rest of this repository
 
-The draft is a subset of [`../spec.md`](../spec.md) — specifically §2.1–2.6 — rewritten to
-IETF conventions and stripped of everything specific to one implementation. Where the two
-disagree, `spec.md` is what the reference implementation follows; the draft is what is being
-proposed for wider review. They are kept deliberately separate so that a change to the
-protocol does not silently become a change to a submitted document.
+Both drafts are rewritten from `../spec.md` to IETF conventions and stripped of everything
+specific to one implementation. Where the two disagree, `spec.md` is what the reference
+implementation follows; the drafts are what is being proposed for wider review. They are kept
+deliberately separate so that a change to the protocol does not silently become a change to a
+submitted document.
 
-Notable differences, all intentional:
+Intentional differences:
 
-- The well-known suffix is `agent-marketplace`, not `ai-market`. A registry entry should not
-  carry one project's brand.
-- The header field is `Agent-Marketplace-Crawler`, not `X-AIMarket-Crawler`. `X-` prefixes
-  are deprecated by RFC 6648, and an implementation submitting this should plan to accept
-  both names during any transition.
+- Well-known suffix `agent-marketplace`, not `ai-market.json`; header field
+  `Agent-Marketplace-Crawler`, not `X-AIMarket-Crawler` (RFC 6648). The reference hub serves,
+  sends and accepts both spellings since 2026-10-30 (`aimarket_hub/discovery_names.py`,
+  hub docs `discovery-names.md`); `conformance/run.py --hub` checks the draft path and skips,
+  not fails, on a hub that serves only the legacy one.
+- Member names `catalogue_url` / `capabilities` in place of `manifest_url` / `tools`; the
+  canonical string keeps the pair name `tools_hash`, so signatures are byte-identical under
+  both. The discovery draft's appendix carries the mapping table.
+- The discovery draft names the deployed canonicalisation `ed25519-pipe-2` and says in §5.3
+  that moving to RFC 8785 would be a new profile name, decided by a working group.
+- The federation draft's announcement message uses `index_url` / `discovery_url`; the canonical
+  string keeps `hub_url` / `well_known_url` as pair names for the same reason.
