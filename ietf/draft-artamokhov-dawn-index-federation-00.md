@@ -1,7 +1,7 @@
 ---
 title: "Federation Between Capability Indexes: Crawl, Reciprocal Identification and Admission"
 abbrev: "Index Federation"
-docname: draft-AUTHOR-dawn-index-federation-00
+docname: draft-artamokhov-dawn-index-federation-00
 category: exp
 ipr: trust200902
 submissiontype: IETF
@@ -18,10 +18,10 @@ stand_alone: yes
 pi: [toc, sortrefs, symrefs]
 author:
   -
-    ins: A. AUTHOR
-    name: AUTHOR NAME
+    ins: A. Artamokhov
+    name: Aleksandr Artamokhov
     organization: Independent
-    email: AUTHOR@EXAMPLE.COM
+    email: alexar76@rambler.ru
 normative:
   RFC3986:
   RFC8259:
@@ -30,10 +30,10 @@ normative:
     title: "A Discovery Document and Signed Catalogue for Capability Marketplaces"
     author:
       -
-        ins: A. AUTHOR
+        ins: A. Artamokhov
     date: 2026-10
     seriesinfo:
-      Internet-Draft: draft-AUTHOR-dawn-marketplace-discovery-00
+      Internet-Draft: draft-artamokhov-dawn-marketplace-discovery-00
 informative:
   RFC6648:
   RFC7942:

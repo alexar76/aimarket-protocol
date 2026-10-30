@@ -34,5 +34,5 @@ for md in "${files[@]}"; do
   # xml2rfc prints warnings to stderr; a non-zero exit is an error.
   xml2rfc --text --html --path build "build/$name.xml" 2>&1 | grep -v 'NotOpenSSLWarning\|warnings.warn' || status=1
 done
-grep -l 'AUTHOR' build/*.xml >/dev/null 2>&1 && echo "NOTE: AUTHOR placeholders still present — fill the front matter before submitting." >&2
+grep -l "AUTHOR NAME\|AUTHOR@EXAMPLE" build/*.xml >/dev/null 2>&1 && echo "NOTE: AUTHOR placeholders still present — fill the front matter before submitting." >&2
 exit $status

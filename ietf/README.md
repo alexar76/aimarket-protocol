@@ -5,8 +5,8 @@ each lands in the scope of the body that owns its layer:
 
 | File | Subject | Category | Where it is aimed |
 |---|---|---|---|
-| `draft-AUTHOR-dawn-marketplace-discovery-00.md` | the discovery document at a well-known URI, the signed catalogue, key pinning, the `ed25519-pipe-2` signature profile (= spec §2.1, §7.3.1–7.3.2, §7.3.7) | Standards Track | inside the DAWN WG charter: public properties of an AI resource + integrity of discovery information |
-| `draft-AUTHOR-dawn-index-federation-00.md` | crawl, reciprocal identification, announcement, admission (pending ≠ admitted), catalogue preview (= spec §2.2–2.6) | Experimental | input to DAWN's gap analysis — `draft-jimenez-dawn-discovery-landscape` §6.2 names "no interoperable federation between directories" |
+| `draft-artamokhov-dawn-marketplace-discovery-00.md` | the discovery document at a well-known URI, the signed catalogue, key pinning, the `ed25519-pipe-2` signature profile (= spec §2.1, §7.3.1–7.3.2, §7.3.7) | Standards Track | inside the DAWN WG charter: public properties of an AI resource + integrity of discovery information |
+| `draft-artamokhov-dawn-index-federation-00.md` | crawl, reciprocal identification, announcement, admission (pending ≠ admitted), catalogue preview (= spec §2.2–2.6) | Experimental | input to DAWN's gap analysis — `draft-jimenez-dawn-discovery-landscape` §6.2 names "no interoperable federation between directories" |
 
 The IETF formed the **DAWN working group** (Discovery of Agents, Workloads, and Named
 entities) on 2026-10-22: chairs Dapeng Liu and Frank Brockners, AD Éric Vyncke, list
@@ -16,16 +16,21 @@ above rather than submitted as one document.
 
 ## Status
 
-**Not submitted.** Both texts are complete; the placeholders below need real values first.
+Author fields filled on 2026-10-30 (A. Artamokhov, alexar76@rambler.ru — the repository's git identity). Submission
+state is recorded below this line as it happens.
 
-| Placeholder | Value |
-|---|---|
-| `AUTHOR` in `docname` (both files, and in each file's reference to the other) | Surname, lowercase, no spaces — the files become `draft-<surname>-dawn-marketplace-discovery-00` and `draft-<surname>-dawn-index-federation-00` |
-| `A. AUTHOR` / `AUTHOR NAME` | Initials and full name |
-| `AUTHOR@EXAMPLE.COM` | A working email; it is published |
-| `organization: Independent` | Keep for an individual submission |
-
-Submit the discovery draft first: the federation draft references it by name.
+- **2026-10-30 (datatracker shows 2026-10-29 UTC):** both drafts uploaded through the datatracker web form,
+  passed the submission checks (idnits: 1 warning each, nothing blocking), submitter set to the author.
+  Status **Awaiting Submitter Authentication**: a confirmation email went to alexar76@rambler.ru for each;
+  the drafts are posted when those links are followed. Status pages:
+  `https://datatracker.ietf.org/submit/status/171295/` (discovery), `https://datatracker.ietf.org/submit/status/171296/`
+  (federation). Trap: the post form's `replaces` field must be omitted, not sent empty.
+- **2026-10-30 06:51 UTC — POSTED.** The author confirmed both emails; the datatracker lists
+  https://datatracker.ietf.org/doc/draft-artamokhov-dawn-marketplace-discovery/ and
+  https://datatracker.ietf.org/doc/draft-artamokhov-dawn-index-federation/ at revision 00. They expire
+  on 2027-05-03 unless a -01 is posted; the next step is the note to dawn@ietf.org.
+- The datatracker API (`/api/submission`) needs a datatracker account on the author's email; without one it
+  answers `No such user`. The web form needs no account.
 
 ## Build
 

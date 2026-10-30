@@ -1,7 +1,7 @@
 ---
 title: "A Discovery Document and Signed Catalogue for Capability Marketplaces"
 abbrev: "Marketplace Discovery"
-docname: draft-AUTHOR-dawn-marketplace-discovery-00
+docname: draft-artamokhov-dawn-marketplace-discovery-00
 category: std
 ipr: trust200902
 submissiontype: IETF
@@ -18,10 +18,10 @@ stand_alone: yes
 pi: [toc, sortrefs, symrefs]
 author:
   -
-    ins: A. AUTHOR
-    name: AUTHOR NAME
+    ins: A. Artamokhov
+    name: Aleksandr Artamokhov
     organization: Independent
-    email: AUTHOR@EXAMPLE.COM
+    email: alexar76@rambler.ru
 normative:
   RFC3339:
   RFC3986:
@@ -40,10 +40,10 @@ informative:
     title: "Federation Between Capability Indexes: Crawl, Reciprocal Identification and Admission"
     author:
       -
-        ins: A. AUTHOR
+        ins: A. Artamokhov
     date: 2026-10
     seriesinfo:
-      Internet-Draft: draft-AUTHOR-dawn-index-federation-00
+      Internet-Draft: draft-artamokhov-dawn-index-federation-00
   A2A:
     title: "Agent2Agent (A2A) Protocol Specification, version 1.0"
     target: https://a2a-protocol.org/latest/specification/
