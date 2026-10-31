@@ -88,6 +88,27 @@
           "status": {"type": "string", "const": "observed"}
         }
       }
+    },
+    "observed_sellers": {
+      "type": "array",
+      "description": "x402 sellers this hub lists by observation, with their consent (spec §2.7). This hub's statement about what it saw, never the seller's; not peers, and never re-listed by another hub as its own.",
+      "items": {
+        "type": "object",
+        "required": ["origin", "status"],
+        "properties": {
+          "origin": {"type": "string", "format": "uri"},
+          "name": {"type": "string"},
+          "routes_served": {"type": "integer", "minimum": 0},
+          "observed_at": {"type": "string"},
+          "observed_by": {"type": "string", "format": "uri"},
+          "status": {"type": "string", "const": "observed"}
+        }
+      }
+    },
+    "observed_sellers_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Where this hub serves its observed-seller listing (spec §2.7)."
     }
   }
 }

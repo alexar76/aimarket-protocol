@@ -5,8 +5,8 @@ each lands in the scope of the body that owns its layer:
 
 | File | Subject | Category | Where it is aimed |
 |---|---|---|---|
-| `draft-artamokhov-dawn-marketplace-discovery-00.md` | the discovery document at a well-known URI, the signed catalogue, key pinning, the `ed25519-pipe-2` signature profile (= spec §2.1, §7.3.1–7.3.2, §7.3.7) | Standards Track | inside the DAWN WG charter: public properties of an AI resource + integrity of discovery information |
-| `draft-artamokhov-dawn-index-federation-00.md` | crawl, reciprocal identification, announcement, admission (pending ≠ admitted), catalogue preview (= spec §2.2–2.6) | Experimental | input to DAWN's gap analysis — `draft-jimenez-dawn-discovery-landscape` §6.2 names "no interoperable federation between directories" |
+| `draft-artamokhov-dawn-marketplace-discovery-01.md` | the discovery document at a well-known URI, the signed catalogue, key pinning, the `ed25519-pipe-2` signature profile (= spec §2.1, §7.3.1–7.3.2, §7.3.7) | Standards Track | inside the DAWN WG charter: public properties of an AI resource + integrity of discovery information |
+| `draft-artamokhov-dawn-index-federation-01.md` | crawl, reciprocal identification, announcement, admission (pending ≠ admitted), catalogue preview (= spec §2.2–2.6) | Experimental | input to DAWN's gap analysis — `draft-jimenez-dawn-discovery-landscape` §6.2 names "no interoperable federation between directories" |
 
 The IETF formed the **DAWN working group** (Discovery of Agents, Workloads, and Named
 entities) on 2026-10-22: chairs Dapeng Liu and Frank Brockners, AD Éric Vyncke, list
@@ -33,6 +33,12 @@ state is recorded below this line as it happens.
   https://mailarchive.ietf.org/arch/msg/dawn/4NQ7qA-xngkbi3pHhSXu5aomu_Q/ (a first attempt through
   Outlook over rambler's SMTP bounced with `554 5.7.1 Spam message rejected`; the web mail client
   delivered). Replies go to the list; they feed -01.
+- **-01 POSTED 2026-10-30 10:49 UTC** (author approved; both expire 2027-05-03). Submitted (status pages 171324 discovery, 171325 federation; idnits3 reports only SUBMISSION_TYPE_UNEXPECTED, harmless for individual drafts; awaiting the author's approval by email): editorial revision of both drafts after the DAWN list
+  showed low tolerance for prose that reads as generated (Stephen Farrell, 2026-10-30). Same requirements,
+  about 30% shorter, explanations moved to an "Implementation experience" appendix that cites only
+  incidents found in the repository history; Implementation Status updated (two unrelated parties'
+  catalogues verify under the profile). One wording fix in discovery: "a reader", not "an index", ignores
+  unknown members.
 - The datatracker API (`/api/submission`) needs a datatracker account on the author's email; without one it
   answers `No such user`. The web form needs no account.
 

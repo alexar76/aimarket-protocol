@@ -247,6 +247,75 @@ What a signature proves here is narrow and MUST NOT be overstated in any UI: the
 was signed by the key the peer advertises and was not altered in transit. It says nothing
 about that key belonging to a party worth trusting.
 
+### 2.7. Observed sellers
+
+An x402 seller can be listed without publishing anything for this protocol. The hub reads
+what the seller already publishes for x402 and lists it as an **observation**: this hub saw
+this offer at this time. Admission (§2.4) asks the seller for a signed manifest kept in step
+with its live prices; this tier asks for consent only, and moves the work to the hub.
+
+**Consent.** A hub MUST NOT list a seller under this section without the seller's consent,
+recorded by the operator with who gave it and when. A hub MUST stop serving a seller's
+routes, and SHOULD delete its observations, as soon as the operator records that consent was
+withdrawn. A public listing SHOULD show that consent exists and when it was given, and
+SHOULD NOT publish who gave it.
+
+**Reading the seller.** The hub fetches the seller's x402 discovery document at
+`/.well-known/x402` (or `/.well-known/x402.json`) and takes the routes it lists on the
+seller's own origin; a route on any other origin MUST be ignored, as for `endpoint` in §3.1.
+The consent MAY name the routes; a hub MUST then probe only those. For each route the hub
+sends one request that carries no payment (`POST` with `{}` unless the document names
+`GET`) and reads the `402` exactly as the admission sandbox does: x402 V1 `accepts` in the
+body, or V2 in the base64 `PAYMENT-REQUIRED` header.
+
+- A hub MUST NOT send a payment, an authorization or a payment header in a probe.
+- A hub MUST bound how often it probes a seller (at least one hour between observations of
+  the same seller) and how many routes it probes per seller, and SHOULD identify itself in
+  the request (`User-Agent`, and `X-AIMarket-Observer: <hub URL>`).
+- When a route answers without asking for payment, the seller has done real work for free
+  (a free tier, a trial). A hub SHOULD stop probing that seller for the rest of the cycle,
+  so that a listing check does not spend the seller's free allowance. Such a route is not
+  listed.
+- Fetches MUST pass §7.4 and MUST be size-capped.
+
+**What is listed.** A route is listed only when its last `402` named a recipient (`payTo`),
+an asset, a network and an amount. The listed price is the `402`'s amount, not the
+document's; a disagreement between the two SHOULD be shown. A hub MUST NOT convert an amount
+into a currency it cannot price: an asset the hub does not know is not listed.
+
+**The recipient pin.** The first `payTo` observed for a seller, or the one the seller gave
+with its consent, is pinned. A route whose `402` names a different `payTo` MUST NOT be listed
+until the operator re-confirms the recipient with the seller. A changed recipient is what a
+compromised seller looks like, and the pin is the only check this tier can make on it.
+
+**Freshness.** A route whose last observation is older than twice the hub's observation
+interval MUST NOT be served.
+
+**What it is not.** Observed routes are not catalogue rows:
+
+1. They MUST NOT appear in `/manifest`, in the `matches` of `/search`, or in `peers`, and MUST
+   NOT be invocable or routable through `/invoke`. Implementations SHOULD keep them out
+   **structurally**, in storage the catalogue paths do not read (as §2.6 (2)).
+2. A hub MAY return them in a separate `observed` array of `/search`, and MUST serve them at
+   `GET /ai-market/v2/federation/observed-sellers`, each marked `tier: "observed"` and
+   `signed_by_seller: false`, with `observed_at`, `observed_by`, the pinned `pay_to`, the
+   network, the asset and the amount.
+3. A hub MAY name its observed sellers in its signed root well-known under
+   `observed_sellers` (origin, name, routes served, `observed_at`, `observed_by`). The
+   signature makes it this hub's statement about what it saw, never the seller's. Another
+   hub MUST NOT re-list them as its own observations; it MAY show them as observed by the
+   hub that published them.
+
+What an observed listing vouches for is narrow and MUST NOT be overstated: at `observed_at`,
+an unpaid request to this URL returned a `402` naming this amount, asset, network and
+recipient. It says nothing about delivery, about who operates the origin, or about the
+recipient belonging to it. The hub is not in the payment path. A buyer calls the seller's
+URL itself and pays per the `402` it receives; it SHOULD refuse when that `402` names another
+`payTo` than the listing or asks for more than the listed amount.
+
+A seller that wants signed receipts, trust scores and routing through hubs uses the
+admission path of §2.4; an observed listing does not lead to it automatically.
+
 ---
 
 ## 3. Federated Catalog
@@ -983,6 +1052,7 @@ unauthenticated HTTP request.
 | POST | `/ai-market/v2/federation/announce` | Peer announcement | v2 |
 | GET | `/ai-market/v2/federation/peers` | List known peers | v2 |
 | POST | `/ai-market/v2/federation/crawl` | Trigger manual crawl | v2 |
+| GET | `/ai-market/v2/federation/observed-sellers` | x402 sellers listed by observation, with consent (§2.7) | v2 |
 | GET | `/ai-market/v2/reputation/{hub_url}` | Trust score for a hub | v2 |
 | POST | `/ai-market/v2/reputation/events` | Submit reputation events | v2 |
 | GET | `/ai-market/v2/stats/live` | Live invocation stream | v2 |
