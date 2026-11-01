@@ -208,7 +208,7 @@ flowchart TB
 | **HEPHAESTUS** | Capability-chain forge — price a graph from the live catalogue before spending; signed bill of materials | [`hephaestus/`](https://github.com/alexar76/hephaestus) · [studio](https://modelmarket.dev/studio) |
 | **Oracles** | Signed verifiable math — randomness, VDF, consensus, reputation | [`oracles/`](https://github.com/alexar76/oracles) (satellite) |
 | **Physical oracles** | Attested sensor readings + statistical plausibility verify | `gaia/` (satellite) |
-| **Commerce facts** | Public-record facts and tools for agents that trade — EU VAT (VIES), LEI, company registers, EORI, RDAP, ECB rates, sanctions lists, business days, OpenTimestamps, web capture, timers; priced calls only through a hub | `symmartys/` (local source; publication pending) |
+| **Commerce facts** | Public-record facts and tools for agents that trade — EU VAT (VIES), LEI, company registers, EORI, RDAP, ECB rates, sanctions lists, business days, OpenTimestamps, web capture, timers; priced calls only through a hub | [`symmartys/`](https://github.com/alexar76/symmartys) (satellite) |
 | **Direct sellers** | Real goods sold seller-direct over x402: quote through the Hub, order paid to the seller's wallet, refunds; signed delivery and refund receipts the Hub counts as `deliveries_30d` | [`esim-kit/`](https://github.com/alexar76/esim-operator-kit) (satellite) |
 | **AI Service Mesh** | Agent registry, mesh orchestration, escrow, activity | `ai-service-mesh/` |
 | **Clients** | Human apps and autonomous agents | `aimarket-sdks/`, `desktop-integrations/`, `aimarket-widget/` |
