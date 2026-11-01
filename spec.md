@@ -264,9 +264,20 @@ SHOULD NOT publish who gave it.
 `/.well-known/x402` (or `/.well-known/x402.json`) and takes the routes it lists on the
 seller's own origin; a route on any other origin MUST be ignored, as for `endpoint` in §3.1.
 The consent MAY name the routes; a hub MUST then probe only those. For each route the hub
-sends one request that carries no payment (`POST` with `{}` unless the document names
-`GET`) and reads the `402` exactly as the admission sandbox does: x402 V1 `accepts` in the
-body, or V2 in the base64 `PAYMENT-REQUIRED` header.
+first sends `HEAD`. When the answer is a `402` whose terms are in the V2 `PAYMENT-REQUIRED`
+header, that is the observation, and no second request is sent. Otherwise — a `402` without
+header terms, or `400`, `404`, `405`, `422`, `501` — the hub sends one request that carries
+no payment (`POST` with `{}` unless the document names `GET`). A `2xx` to `HEAD` means the
+seller served the route for free; the hub MUST NOT send the second request. Either `402` is
+read exactly as the admission sandbox does: x402 V1 `accepts` in the body, or V2 in the
+base64 `PAYMENT-REQUIRED` header.
+
+**HEAD-first (recommended for sellers).** A seller makes a listing check cost it nothing by
+answering `HEAD` on each paid route with its `402` and the V2 `PAYMENT-REQUIRED` header
+**before** it checks a free tier or a trial and before it runs the handler. By default most
+frameworks do not: Express and Starlette run the `GET` handler for `HEAD` (the free call is
+spent), and a `POST`-only route answers `HEAD` with `404` or `405` (no price). The rule is a
+few lines in front of the paid routes; see `docs/head-first.md`.
 
 - A hub MUST NOT send a payment, an authorization or a payment header in a probe.
 - A hub MUST bound how often it probes a seller (at least one hour between observations of
