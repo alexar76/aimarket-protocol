@@ -1,13 +1,13 @@
 ---
 title: "A Discovery Document and Signed Catalogue for Capability Marketplaces"
 abbrev: "Marketplace Discovery"
-docname: draft-artamokhov-dawn-marketplace-discovery-01
+docname: draft-artamokhov-dawn-marketplace-discovery-03
 category: std
 ipr: trust200902
 submissiontype: IETF
 area: Internet
 workgroup: Network Working Group
-date: 2026-10-30
+date: 2026-11-02
 keyword:
   - agents
   - discovery
@@ -36,6 +36,25 @@ informative:
   RFC8785:
   RFC9727:
   I-D.jimenez-dawn-discovery-landscape:
+  I-D.farrel-dawn-terminology:
+  I-D.mozleywilliams-dawn-dnsaid:
+  DAWN-CHARTER:
+    title: "Discovery of Agents With Names (dawn), charter-ietf-dawn-01"
+    target: https://datatracker.ietf.org/doc/charter-ietf-dawn/
+    author:
+      -
+        org: IETF
+    date: 2026-10
+  MDI:
+    title: "Minimum Public Discovery Information: Requirements and Common Semantics"
+    author:
+      -
+        ins: Y. Cui
+      -
+        ins: K. Yao
+    date: 2026-11
+    seriesinfo:
+      Internet-Draft: draft-cui-dawn-mdi-model-02
   FEDERATION:
     title: "Federation Between Capability Indexes: Crawl, Reciprocal Identification and Admission"
     author:
@@ -66,7 +85,8 @@ This document defines a JSON discovery document, served at a well-known URI, tha
 public properties a client needs before using a capability index: its name, the protocol
 versions it serves, the location of its catalogue, and the key that signs the catalogue. It
 also states the requirements for that signed catalogue and defines one signature profile.
-Discovery between indexes, catalogue exchange and trust are out of scope.
+Discovery between indexes, catalogue exchange, trust, and search or selection among
+catalogued capabilities are out of scope.
 
 --- middle
 
@@ -81,7 +101,8 @@ catalogue is, and which key signs the catalogue.
 {{I-D.jimenez-dawn-discovery-landscape}} describes the current mechanisms for publishing such
 facts. Each defines its own well-known resource and schema, and signed catalogues rarely
 specify the exact bytes that are signed. This document defines one discovery document and
-requires any signature profile used with it to specify the signed bytes.
+requires any signature profile used with it to specify the signed bytes. {{mdi}} maps the
+discovery document onto the information model in {{MDI}}.
 
 Catalogue exchange between indexes and peer admission are described separately in
 {{FEDERATION}}.
@@ -95,8 +116,26 @@ This document specifies:
   for any signature profile, and one profile ({{profile}});
 * key pinning by readers ({{keys}}).
 
-It does not specify how indexes find each other, how catalogues are exchanged or ranked, how
-capabilities are invoked or paid for, how providers are identified, or reputation.
+It does not specify how indexes find each other, how catalogues are exchanged, searched or
+ranked, how capabilities are invoked or paid for, how providers are identified, or reputation.
+
+## Relation to the DAWN charter {#dawn}
+
+The DAWN working group charter {{DAWN-CHARTER}} limits discovery to obtaining the minimum
+public discovery information for an AI resource, which may be "a service such as a catalog
+that will further the discovery process". It excludes open-ended search, semantic
+matchmaking, ranking, and selection of a resource by capability or user intent, and, in the
+initial phase, catalogs of capabilities. {{I-D.farrel-dawn-terminology}} defines discovery
+in the same way.
+
+In those terms:
+
+* the discovery document ({{discovery}}) is discovery information for one such service, an
+  index, and a DNS record can lead to it ({{dns}});
+* the catalogue ({{catalogue}}), its signature profile ({{profile}}) and key pinning
+  ({{keys}}) are adjacent work. They are in this document because a reader needs them to
+  authenticate the catalogue that the discovery document points to. How a catalogue is
+  searched, and how a capability in it is selected, is not specified here.
 
 ## Requirements Language
 
@@ -195,6 +234,22 @@ NOT change type or meaning in a later revision; a different meaning requires a n
 {{RFC9727}} defines `/.well-known/api-catalog`, in which a host lists its own APIs. The
 discovery document describes an index that lists capabilities of other hosts and identifies
 the key that signs that list. An index MAY publish both.
+
+## Locating the document through DNS {#dns}
+
+{{I-D.mozleywilliams-dawn-dnsaid}} defines an organizational index record at
+`_index._agents.<domain>` that points to a catalog, agent registry or database, and leaves
+the content served there out of its scope. An index operator can publish that record for its
+own domain with the well-known suffix of the discovery document:
+
+~~~
+_index._agents.hub.example. 3600 IN SVCB 1 hub.example. (
+    alpn=h2 well-known=agent-marketplace )
+~~~
+
+The parameter names follow {{I-D.mozleywilliams-dawn-dnsaid}}. A reader that finds this
+record retrieves `https://hub.example/.well-known/agent-marketplace` and continues as in
+{{discovery}}.
 
 # The catalogue {#catalogue}
 
@@ -434,6 +489,57 @@ No implementation by another party is known to have been written from this docum
 The canonical string, digest rule and verification rule are the same, so a signature valid
 under one is valid under the other.
 
+# Relation to the MDI model {#mdi}
+{:numbered="false"}
+
+{{MDI}} describes the minimum public discovery information (MDI) for one entity and lists
+what a binding has to specify (its Section 9). This appendix records how the discovery
+document carries MDI. It is not a complete binding.
+
+A discovery document is one MDI instance, and its entity is the index.
+
+| MDI element | Discovery document |
+|---|---|
+| Name | the URI of the discovery document, implicit in the carrier |
+| Display Name | `name` |
+| Entity Type | not carried; the well-known suffix implies an index |
+| Endpoint, continuing discovery | `catalogue_url`, with the versions in `protocol_versions` |
+| Freshness | `generated_at`, the generation time only |
+| Stable Identifier | not carried |
+| Authentication Hint | not carried; neither document requires authentication |
+| Trust Reference | `signer_public_key` and `signature_profile` |
+| Extensions | `capabilities_count`, `peers` |
+
+Names:
+: The naming scope of the Name is the "https" origin of the document. `name` is not unique
+  ({{discovery}}), so it is a Display Name.
+
+Endpoints:
+: The purpose of `catalogue_url` follows from the member name. `protocol_versions` lists
+  versions of the catalogue interface; the protocol itself is implied by the well-known
+  suffix, and the catalogue states the version it uses in `protocol_version`. Most deployed
+  documents also carry `mcp_endpoint`, an Endpoint for interaction over MCP, which this
+  document does not define.
+
+Peers:
+: `peers` points to other entities, so it is not an Endpoint of this instance. Traversal
+  depth and loop handling are specified in {{FEDERATION}}.
+
+Integrity and origin:
+: TLS authenticates the discovery document to its origin. The catalogue is authenticated by
+  its signature under the key pinned at first contact ({{keys}}), also when another host
+  serves it. The signature authenticates the index, not the providers whose capabilities the
+  catalogue relays.
+
+Change and replay:
+: The catalogue's `generated_at` changes at every generation, whether or not the entries
+  changed. A reader can tell whether they changed by comparing the digest of `capabilities`
+  ({{digest}}) with that of the last verified catalogue. Because `generated_at` is in the signed string, a
+  reader can also detect a catalogue older than one it has already verified.
+
+This document defines no validity window or refresh hint; MDI's Freshness has members for
+both. A later revision may add them.
+
 # Implementation experience
 {:numbered="false"}
 
@@ -446,14 +552,29 @@ These failures in deployed implementations led to requirements in this document:
 * A widely used Ed25519 library accepted a signature under a small-order key for an arbitrary
   message ({{verify}}).
 
+# Changes from -02
+{:numbered="false"}
+
+Added {{dawn}}, which relates the parts of this document to the DAWN charter and marks the
+catalogue, its signature profile and key pinning as adjacent work, and {{dns}}, an example of
+a DNS-AID index record that leads to the discovery document. The Abstract and the Scope now
+also exclude search. No requirement changed.
+
+# Changes from -01
+{:numbered="false"}
+
+Added {{mdi}}, a mapping of the discovery document onto {{MDI}}, and a pointer to it in the
+Introduction. No requirement changed.
+
 # Changes from -00
 {:numbered="false"}
 
 Editorial: the text was shortened, and explanatory passages were removed or moved to the
-appendix above. Implementation Status was updated. One wording correction: the requirement to
+Implementation experience appendix. Implementation Status was updated. One wording correction: the requirement to
 ignore unrecognised members applies to readers; -00 said "index".
 
 # Acknowledgements
 {:numbered="false"}
 
-Thanks to the authors of {{I-D.jimenez-dawn-discovery-landscape}}.
+Thanks to the authors of {{I-D.jimenez-dawn-discovery-landscape}}, and to Chenguang Du and
+Siyu Deng for the discussion of minimum discovery information on the DAWN list.

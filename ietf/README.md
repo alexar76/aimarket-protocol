@@ -5,14 +5,23 @@ each lands in the scope of the body that owns its layer:
 
 | File | Subject | Category | Where it is aimed |
 |---|---|---|---|
-| `draft-artamokhov-dawn-marketplace-discovery-01.md` | the discovery document at a well-known URI, the signed catalogue, key pinning, the `ed25519-pipe-2` signature profile (= spec §2.1, §7.3.1–7.3.2, §7.3.7) | Standards Track | inside the DAWN WG charter: public properties of an AI resource + integrity of discovery information |
+| `draft-artamokhov-dawn-marketplace-discovery-03.md` | the discovery document at a well-known URI, the signed catalogue, key pinning, the `ed25519-pipe-2` signature profile (= spec §2.1, §7.3.1–7.3.2, §7.3.7) | Standards Track | the discovery document: DAWN's minimum public discovery information for "a service such as a catalog"; the catalogue, its profile and key pinning: adjacent work, labelled so in §1.2 since -03 |
 | `draft-artamokhov-dawn-index-federation-01.md` | crawl, reciprocal identification, announcement, admission (pending ≠ admitted), catalogue preview (= spec §2.2–2.6) | Experimental | input to DAWN's gap analysis — `draft-jimenez-dawn-discovery-landscape` §6.2 names "no interoperable federation between directories" |
 
-The IETF formed the **DAWN working group** (Discovery of Agents, Workloads, and Named
-entities) on 2026-10-22: chairs Dapeng Liu and Frank Brockners, AD Éric Vyncke, list
+The IETF formed the **DAWN working group** (Discovery of Agents With Names, charter-ietf-dawn-01)
+on 2026-10-22: chairs Dapeng Liu and Frank Brockners, AD Éric Vyncke, list
 `dawn@ietf.org`. Its phase-one charter covers initial discovery and integrity and excludes
 catalogues, Internet-wide search, identity and trust — which is why the material is split as
 above rather than submitted as one document.
+
+On 2026-11-02 the AD restated the charter on the list ("[Dawn] About the DAWN charter"): in DAWN,
+discovery only means learning how to connect to an agent, i.e. the properties needed to select a
+protocol (like `alpn` in an SVCB record); "select" does not mean search, and open-ended search,
+semantic matchmaking, ranking and selection by capability or intent are out. Adjacent work is welcome
+on the list if it is labelled as such. The same day draft-farrel-dawn-terminology-07 put this into its
+definition of Discovery, and DNS-AID became draft-mozleywilliams-dawn-dnsaid-00, whose
+`_index._agents.<domain>` record points to a catalog and leaves its content out of scope. Discovery
+-03 follows from these three messages.
 
 ## Status
 
@@ -39,6 +48,35 @@ state is recorded below this line as it happens.
   incidents found in the repository history; Implementation Status updated (two unrelated parties'
   catalogues verify under the profile). One wording fix in discovery: "a reader", not "an index", ignores
   unknown members.
+- **Discovery -02 SUBMITTED 2026-11-02 ~13:10 UTC** (owner: «сам перепроверь и отправь»; status page
+  171879, Awaiting Approval from Previous Version Authors: the approval email went to alexar76@rambler.ru and
+  the revision is posted once the author follows its link). The federation draft stays at -01. One addition:
+  an appendix mapping the discovery document onto the MDI information model of draft-cui-dawn-mdi-model-02,
+  posted the same day, whose acknowledgements name the author; a pointer in the Introduction; MDI as an
+  informative reference; Chenguang Du and Siyu Deng in the acknowledgements. No requirement changed. Every
+  claim in the appendix was checked on the live indexes that day: five of the six documents carry
+  `mcp_endpoint`, both documents answer without authentication, and two catalogues fetched 72 s apart had
+  different `generated_at`, the same capabilities digest, and verified under the pinned key, while the same
+  catalogue with an older `generated_at` did not. idnits (author-tools): the same two RFC 6234/8032 downrefs
+  and the non-ASCII author name in a fetched reference as -01, nothing new. Cut-off before IETF 127:
+  2 November 23:59 UTC. Posted at 13:13:29 UTC (author approved).
+- **Discovery -03 PREPARED 2026-11-02 ~19:00 UTC, not submitted** (owner: «Да, готовь -03»). Two
+  additions, no requirement changed: §1.2 "Relation to the DAWN charter" (the discovery document is
+  discovery information for a catalog-type service; the catalogue, its signature profile and key
+  pinning are labelled adjacent work; search and selection are not specified) and §2.3 "Locating the
+  document through DNS" (a DNS-AID `_index._agents` SVCB example with `well-known=agent-marketplace`,
+  not deployed on our domains). Informative references added: the charter, terminology -07, DNS-AID -00.
+  Abstract and Scope also exclude search now. idnits (author-tools): the same two downrefs and non-ASCII
+  name as -02, plus a comment that its cache knows terminology only up to -06 (-07 was posted the same
+  day). If submitted after the cut-off window (from 21 November), set `date:` to the submission day.
+- **Discovery -03 SUBMITTED 2026-11-02 ~19:10 UTC** (owner: «Да, отправляй»; status page 172079, Awaiting
+  Approval from Previous Version Authors: the approval email went to alexar76@rambler.ru, and the revision is
+  posted once the author follows its link, before the 23:59 UTC cut-off). Submission checks passed; idnits
+  1 warning; idnits3 1 error (SUBMISSION_TYPE_UNEXPECTED) and 83 DEPRECATED_ELEMENT warnings, the same
+  kinds as -02 (80), non-blocking. **Posted 2026-11-02 19:29:26 UTC** (author approved); expires
+  2027-05-06. Checked the next morning against the list: Adrian Farrel (22:32 UTC) keeps "Selection" as
+  the choice among search results, out of scope, and reads the AD's "select" as "determine"; -03 uses
+  "selected" only in that out-of-scope sense, so no wording change is needed.
 - The datatracker API (`/api/submission`) needs a datatracker account on the author's email; without one it
   answers `No such user`. The web form needs no account.
 
