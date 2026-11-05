@@ -5,8 +5,8 @@ each lands in the scope of the body that owns its layer:
 
 | File | Subject | Category | Where it is aimed |
 |---|---|---|---|
-| `draft-artamokhov-dawn-marketplace-discovery-03.md` | the discovery document at a well-known URI, the signed catalogue, key pinning, the `ed25519-pipe-2` signature profile (= spec §2.1, §7.3.1–7.3.2, §7.3.7) | Standards Track | the discovery document: DAWN's minimum public discovery information for "a service such as a catalog"; the catalogue, its profile and key pinning: adjacent work, labelled so in §1.2 since -03 |
-| `draft-artamokhov-dawn-index-federation-01.md` | crawl, reciprocal identification, announcement, admission (pending ≠ admitted), catalogue preview (= spec §2.2–2.6) | Experimental | input to DAWN's gap analysis — `draft-jimenez-dawn-discovery-landscape` §6.2 names "no interoperable federation between directories" |
+| `draft-artamokhov-dawn-marketplace-discovery-04.md` | the discovery document at a well-known URI, the signed catalogue, key pinning, catalogue freshness, the `ed25519-pipe-2` signature profile (= spec §2.1, §7.3.1–7.3.2, §7.3.7) | Standards Track | the discovery document: DAWN's minimum public discovery information for "a service such as a catalog"; the catalogue, its profile, key pinning and freshness: adjacent work, labelled so in §1.2 since -03 |
+| `draft-artamokhov-dawn-index-federation-02.md` | crawl, reciprocal identification, announcement, admission (pending ≠ admitted), catalogue preview (= spec §2.2–2.6) | Experimental | input to DAWN's gap analysis — `draft-jimenez-dawn-discovery-landscape` §6.2 names "no interoperable federation between directories" |
 
 The IETF formed the **DAWN working group** (Discovery of Agents With Names, charter-ietf-dawn-01)
 on 2026-10-22: chairs Dapeng Liu and Frank Brockners, AD Éric Vyncke, list
@@ -77,6 +77,32 @@ state is recorded below this line as it happens.
   2027-05-06. Checked the next morning against the list: Adrian Farrel (22:32 UTC) keeps "Selection" as
   the choice among search results, out of scope, and reads the AD's "select" as "determine"; -03 uses
   "selected" only in that out-of-scope sense, so no wording change is needed.
+- **Discovery -04 and federation -02 PREPARED 2026-11-04, not submitted** (owner: «Да, внеси»). After
+  reading draft-raskar-agentic-web-federated-resolution-02 (registry-assisted resolution of known
+  subjects; it leaves registry discovery and communication between registries out of scope, which is
+  what the federation draft covers). Discovery: new §5 Catalogue freshness (a reader SHOULD reject a
+  catalogue whose signed `generated_at` is earlier than the last one it verified under the same key, MAY
+  apply a maximum age, SHOULD reject one dated ahead of its clock; Implementation Status says the hub
+  applies all three, the first added 2026-11-04 in `crawler.py` `_catalogue_rolled_back` with migration
+  066, live on the six hubs since 2026-11-04 ~20:47Z, artifacts/catalogue-floor-rollout-2026-11-04), §7.3 Privacy (a catalogue can be listed
+  in full, so no entries identifying a person without their request), the scope of a signature stated as
+  provenance, not authority evidence. Federation: Privacy asks an index to replace a peer's stored entries
+  at each successful retrieval and keep them when a retrieval fails (as `crawler.py` `_prune_unlisted`
+  does), the 96-stale-entries incident in Implementation experience, Raskar in Relationship to other work,
+  DISCOVERY now -04. Both built with `./build.sh`; idnits (author-tools): discovery the same two RFC
+  6234/8032 downrefs and one non-ASCII line as -03, federation 0 errors and the same non-ASCII warning.
+  Submission is closed until the window reopens (see Timing); set `date:` to the submission day.
+- **2026-11-05, same unsubmitted -04/-02, aligned with the AD's charter reading** (owner: «все поправляй»).
+  Éric Vyncke, "About the DAWN charter", dawn@ietf.org 2026-11-02
+  (https://mailarchive.ietf.org/arch/msg/dawn/EFmwgnuukscABvacJiulowm2uss/, reference `DAWN-SCOPE`):
+  discovery in DAWN = learning how to connect; the properties are those that select a protocol (like SVCB
+  `alpn`), not search or selection by capability. Discovery §1.2 now puts only `catalogue_url`,
+  `protocol_versions` and the DNS record within the charter and marks the other members as adjacent work;
+  the Abstract says so. New §7.1 Integrity of discovery information (HTTPS for the document, DNSSEC for the
+  SVCB record, otherwise use only a host in the queried domain), normative RFC 9364. Federation: Abstract and
+  Introduction call it adjacent work, add "indexing across the wider Internet" to the excluded list, and
+  point to the gap in the jimenez landscape draft instead of a "gap analysis", which the charter does not
+  list. idnits unchanged (discovery 2 downrefs + 1 non-ASCII, federation 0 errors + 1 non-ASCII).
 - The datatracker API (`/api/submission`) needs a datatracker account on the author's email; without one it
   answers `No such user`. The web form needs no account.
 

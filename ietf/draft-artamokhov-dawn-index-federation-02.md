@@ -1,13 +1,13 @@
 ---
 title: "Federation Between Capability Indexes: Crawl, Reciprocal Identification and Admission"
 abbrev: "Index Federation"
-docname: draft-artamokhov-dawn-index-federation-01
+docname: draft-artamokhov-dawn-index-federation-02
 category: exp
 ipr: trust200902
 submissiontype: IETF
 area: Internet
 workgroup: Network Working Group
-date: 2026-10-30
+date: 2026-11-04
 keyword:
   - agents
   - discovery
@@ -31,16 +31,34 @@ normative:
     author:
       -
         ins: A. Artamokhov
-    date: 2026-10
+    date: 2026-11
     seriesinfo:
-      Internet-Draft: draft-artamokhov-dawn-marketplace-discovery-01
+      Internet-Draft: draft-artamokhov-dawn-marketplace-discovery-04
 informative:
+  DAWN-CHARTER:
+    title: "Discovery of Agents With Names (dawn), charter-ietf-dawn-01"
+    target: https://datatracker.ietf.org/doc/charter-ietf-dawn/
+    author:
+      -
+        org: IETF
+    date: 2026-10
+  DAWN-SCOPE:
+    title: "About the DAWN charter"
+    target: https://mailarchive.ietf.org/arch/msg/dawn/EFmwgnuukscABvacJiulowm2uss/
+    author:
+      -
+        ins: E. Vyncke
+        name: Eric Vyncke
+    date: 2026-11-02
+    seriesinfo:
+      "message to the": dawn@ietf.org mailing list
   RFC6648:
   RFC7942:
   RFC9162:
   I-D.jimenez-dawn-discovery-landscape:
   I-D.mp-agntcy-ads:
   I-D.pioli-agent-discovery:
+  I-D.raskar-agentic-web-federated-resolution:
   A2A:
     title: "Agent2Agent (A2A) Protocol Specification, version 1.0"
     target: https://a2a-protocol.org/latest/specification/
@@ -59,8 +77,9 @@ This document describes how independently operated capability indexes discover e
 following discovery documents, how a reading index identifies itself to the index it reads,
 and an admission model that distinguishes a peer that is known from a peer whose catalogue is
 indexed. It also describes how an index can preview a peer's catalogue before admitting it.
-Payment, identity, reputation and invocation are out of scope. The document is intended as
-input to the DAWN gap analysis on federation between directories.
+Payment, identity, reputation and invocation are out of scope. The document describes work
+adjacent to the DAWN charter and addresses the lack of an interoperable federation mechanism
+between directories.
 
 --- middle
 
@@ -82,9 +101,13 @@ reading index identifies itself to the index it reads, and each index decides pe
 whether to index that peer's catalogue. There is no shared infrastructure and no central
 registration.
 
-Catalogue exchange and trust are outside the initial DAWN charter. This document uses DAWN
-terminology because cooperating indexes that exchange catalogues need these mechanisms, and
-is offered as input to the gap analysis, not as a proposal for adoption.
+Catalogue exchange, the indexing of AI resources across the wider Internet, and trust
+management are outside the initial DAWN charter {{DAWN-CHARTER}}, and the responsible Area
+Director has stated that discovery in DAWN means only learning how to connect to a resource
+{{DAWN-SCOPE}}. This document is therefore adjacent work. It uses DAWN terminology because
+cooperating indexes that exchange catalogues need these mechanisms, and is offered in
+response to the gap identified in {{I-D.jimenez-dawn-discovery-landscape}}, not as a
+proposal for adoption under the current charter.
 
 ## Scope
 
@@ -298,6 +321,14 @@ the upstream registry as a peer; this document also covers the case without an u
 {{X402BAZAAR}} builds a catalogue from metadata declared in payments that pass through a
 facilitator. Discovery here does not depend on a prior payment.
 
+{{I-D.raskar-agentic-web-federated-resolution}} resolves a subject that the client already
+knows through registries the client configures, by exact lookup, and leaves registry
+discovery and communication between registries out of its scope. This document covers that
+part for indexes that publish catalogues. The two do not conflict: an index here answers
+queries from stored copies and never forwards a query to a peer ({{crawl}}), which is
+consistent with that document's prohibition of forwarding between registries. A registry
+that offers only exact lookup publishes no catalogue, so it cannot be crawled.
+
 The pending/admitted distinction is similar to the separation in Certificate Transparency
 {{RFC9162}} between an entry being logged and being trusted.
 
@@ -337,11 +368,18 @@ catalogue it received can show what it was served, and readers can compare; this
 not define how. A transparency log for catalogues, in the style of {{RFC9162}}, would address
 this and is out of scope.
 
-## Privacy
+## Privacy {#privacy}
 
 The record described in {{reciprocal}} shows which indexes read a given index. An
 implementation SHOULD record only the declared URI and SHOULD NOT keep the client network
 address.
+
+An index keeps copies of the entries of its admitted peers, so an entry that a peer
+withdraws stays with every index that read it until they read the peer again. An index SHOULD
+replace its stored entries for a peer with the entries of each catalogue it verifies from that
+peer, so that a withdrawn entry disappears at the next successful retrieval. When a retrieval
+fails, it SHOULD keep the stored entries. The privacy considerations of {{DISCOVERY}} apply to
+every catalogue an index copies.
 
 ## Limits
 
@@ -399,6 +437,23 @@ No implementation of this document by another party is known.
 * A service operated by an unrelated party announced itself, failed the automatic checks
   because it published no catalogue, and remained visible to the operator as pending and
   indexed by nothing, as {{admission}} intends. It was later admitted.
+* An index that added entries from each verified catalogue but never removed any kept serving
+  96 entries that it had once copied from a peer's catalogue and that the peer no longer
+  listed. It now replaces a peer's entries after each successful retrieval ({{privacy}}).
+
+# Changes from -01
+{:numbered="false"}
+
+{{privacy}} now asks an index to replace a peer's stored entries at each successful
+retrieval and to keep them when a retrieval fails, and refers to the privacy considerations
+of {{DISCOVERY}}. Relationship to Other Work adds
+{{I-D.raskar-agentic-web-federated-resolution}}. The reference to {{DISCOVERY}} now names -04.
+
+The Abstract and Introduction now describe this document as adjacent to the DAWN charter,
+following the responsible Area Director's reading of it {{DAWN-SCOPE}}, and add the indexing
+of AI resources across the wider Internet to the work the charter excludes. They refer to the
+gap identified in {{I-D.jimenez-dawn-discovery-landscape}} instead of a gap analysis, which
+the charter does not list as a deliverable.
 
 # Changes from -00
 {:numbered="false"}

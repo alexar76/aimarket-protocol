@@ -1,13 +1,13 @@
 ---
 title: "A Discovery Document and Signed Catalogue for Capability Marketplaces"
 abbrev: "Marketplace Discovery"
-docname: draft-artamokhov-dawn-marketplace-discovery-03
+docname: draft-artamokhov-dawn-marketplace-discovery-04
 category: std
 ipr: trust200902
 submissiontype: IETF
 area: Internet
 workgroup: Network Working Group
-date: 2026-11-02
+date: 2026-11-04
 keyword:
   - agents
   - discovery
@@ -31,6 +31,7 @@ normative:
   RFC8259:
   RFC8615:
   RFC9110:
+  RFC9364:
 informative:
   RFC7942:
   RFC8785:
@@ -38,6 +39,7 @@ informative:
   I-D.jimenez-dawn-discovery-landscape:
   I-D.farrel-dawn-terminology:
   I-D.mozleywilliams-dawn-dnsaid:
+  I-D.raskar-agentic-web-federated-resolution:
   DAWN-CHARTER:
     title: "Discovery of Agents With Names (dawn), charter-ietf-dawn-01"
     target: https://datatracker.ietf.org/doc/charter-ietf-dawn/
@@ -45,6 +47,16 @@ informative:
       -
         org: IETF
     date: 2026-10
+  DAWN-SCOPE:
+    title: "About the DAWN charter"
+    target: https://mailarchive.ietf.org/arch/msg/dawn/EFmwgnuukscABvacJiulowm2uss/
+    author:
+      -
+        ins: E. Vyncke
+        name: Eric Vyncke
+    date: 2026-11-02
+    seriesinfo:
+      "message to the": dawn@ietf.org mailing list
   MDI:
     title: "Minimum Public Discovery Information: Requirements and Common Semantics"
     author:
@@ -60,9 +72,9 @@ informative:
     author:
       -
         ins: A. Artamokhov
-    date: 2026-10
+    date: 2026-11
     seriesinfo:
-      Internet-Draft: draft-artamokhov-dawn-index-federation-01
+      Internet-Draft: draft-artamokhov-dawn-index-federation-02
   A2A:
     title: "Agent2Agent (A2A) Protocol Specification, version 1.0"
     target: https://a2a-protocol.org/latest/specification/
@@ -81,11 +93,11 @@ informative:
     date: 2026
 --- abstract
 
-This document defines a JSON discovery document, served at a well-known URI, that carries the
-public properties a client needs before using a capability index: its name, the protocol
-versions it serves, the location of its catalogue, and the key that signs the catalogue. It
-also states the requirements for that signed catalogue and defines one signature profile.
-Discovery between indexes, catalogue exchange, trust, and search or selection among
+This document defines a JSON discovery document, served at a well-known URI, that tells a
+client where a capability index publishes its catalogue and which protocol versions the index
+serves, and identifies the key that signs the catalogue. It also states the requirements for
+that signed catalogue and defines one signature profile; these are work adjacent to the DAWN
+charter. Discovery between indexes, catalogue exchange, trust, and search or selection among
 catalogued capabilities are out of scope.
 
 --- middle
@@ -114,7 +126,8 @@ This document specifies:
 * a discovery document served at a well-known URI ({{discovery}});
 * requirements for the catalogue referenced from it ({{catalogue}}), including requirements
   for any signature profile, and one profile ({{profile}});
-* key pinning by readers ({{keys}}).
+* key pinning by readers ({{keys}});
+* checks of catalogue freshness by readers ({{freshness}}).
 
 It does not specify how indexes find each other, how catalogues are exchanged, searched or
 ranked, how capabilities are invoked or paid for, how providers are identified, or reputation.
@@ -125,17 +138,28 @@ The DAWN working group charter {{DAWN-CHARTER}} limits discovery to obtaining th
 public discovery information for an AI resource, which may be "a service such as a catalog
 that will further the discovery process". It excludes open-ended search, semantic
 matchmaking, ranking, and selection of a resource by capability or user intent, and, in the
-initial phase, catalogs of capabilities. {{I-D.farrel-dawn-terminology}} defines discovery
-in the same way.
+initial phase, catalogs of capabilities and the indexing and searching of AI resources across
+the wider Internet. {{I-D.farrel-dawn-terminology}} defines discovery in the same way.
+
+The responsible Area Director has explained the intended reading of the charter
+{{DAWN-SCOPE}}: discovery in DAWN means learning how to connect to a resource, and the
+properties it covers are those needed to select a means of communication, such as a
+protocol, in the way the "alpn" parameter of an SVCB record does.
 
 In those terms:
 
-* the discovery document ({{discovery}}) is discovery information for one such service, an
-  index, and a DNS record can lead to it ({{dns}});
-* the catalogue ({{catalogue}}), its signature profile ({{profile}}) and key pinning
-  ({{keys}}) are adjacent work. They are in this document because a reader needs them to
-  authenticate the catalogue that the discovery document points to. How a catalogue is
-  searched, and how a capability in it is selected, is not specified here.
+* within the charter: the location of the catalogue (`catalogue_url`), the protocol versions
+  the index serves (`protocol_versions`), from which a reader selects the protocol it uses,
+  and the DNS record that leads to the discovery document ({{dns}}). The `name` member is
+  only a display label;
+* adjacent work: the other members of the discovery document. `capabilities_count`
+  describes what the index offers, `peers` serves the indexing of other indexes
+  ({{FEDERATION}}), and `signer_public_key`, `signature_profile` and `generated_at` serve
+  the catalogue. The catalogue itself ({{catalogue}}), its signature profile ({{profile}}),
+  key pinning ({{keys}}) and the freshness checks ({{freshness}}) are adjacent work too.
+  They are in this document because a reader needs them to authenticate the catalogue that
+  the discovery document points to. How a catalogue is searched, and how a capability in it
+  is selected, is not specified here.
 
 ## Requirements Language
 
@@ -249,7 +273,7 @@ _index._agents.hub.example. 3600 IN SVCB 1 hub.example. (
 
 The parameter names follow {{I-D.mozleywilliams-dawn-dnsaid}}. A reader that finds this
 record retrieves `https://hub.example/.well-known/agent-marketplace` and continues as in
-{{discovery}}.
+{{discovery}}. {{integrity}} describes how the reader protects the record and the document.
 
 # The catalogue {#catalogue}
 
@@ -323,6 +347,27 @@ As a consequence, a key change at the index requires action at each reader. See
 A pinned key shows that the current publisher holds the key that was first seen. It does not
 identify the publisher. A reader's user interface MUST NOT present a verified signature as
 evidence of the operator's identity.
+
+# Catalogue freshness {#freshness}
+
+The catalogue's `generated_at` is covered by the signature ({{canonical}}). A reader uses it
+as follows:
+
+* A reader that has verified a catalogue from an index SHOULD record its `generated_at`, and
+  SHOULD reject a catalogue retrieved later from that index and verified under the same
+  pinned key if its `generated_at` is earlier. Otherwise anyone who stored an older,
+  validly signed catalogue can serve it again, for example to restore an entry or a price
+  that the index has since withdrawn.
+* A reader MAY treat a catalogue as stale when its `generated_at` is older than a maximum age
+  that the reader chooses, and SHOULD NOT rely on a stale catalogue until a newer one
+  verifies.
+* A reader SHOULD reject a catalogue whose `generated_at` is ahead of its own clock by more
+  than a tolerance that the reader chooses.
+
+The first check compares two values written by the index and does not depend on the
+reader's clock; the other two do. If the clock of an index moves backwards, the first check
+rejects its catalogues until its clock passes the recorded value. A reader MAY reset the
+recorded value by an operator decision, as for a key change ({{keys}}).
 
 # The ed25519-pipe-2 signature profile {#profile}
 
@@ -400,6 +445,22 @@ downgrade, small-order key), with a runner, are published at {{VECTORS}}.
 
 # Security Considerations
 
+## Integrity of discovery information {#integrity}
+
+The DAWN charter {{DAWN-CHARTER}} requires integrity for all discovery information
+exchanged between DAWN parties. The discovery document is protected by HTTPS: a reader
+retrieves it only with the "https" scheme ({{discovery}}) and verifies the server
+certificate as described in {{RFC9110, Section 4.3.4}}. The document itself is not signed,
+so a copy relayed by another party, for example a URI in another index's `peers`, carries no
+integrity of its own; a reader retrieves the document from its own URI before using it.
+
+A reader that finds the discovery document through DNS ({{dns}}) SHOULD validate the SVCB
+record with DNSSEC {{RFC9364}}. HTTPS authenticates the host that the record names, not the
+domain that the reader queried, so a forged record can lead a reader to another index whose
+certificate is valid. Without DNSSEC validation, a reader SHOULD use the discovery document
+only if its host is the queried domain, a name under it, or a host that the reader already
+associates with that domain.
+
 ## Signatures and transport
 
 The catalogue may be served from a different host, a content distribution network or a
@@ -411,6 +472,20 @@ original connection. HTTPS does not cover either case; the catalogue signature d
 A valid signature shows that the holder of the pinned key produced the catalogue and that it
 has not been modified. It does not show that the listed capabilities exist, behave as
 described, or cost what is stated. A reader's user interface MUST NOT suggest otherwise.
+
+In the terms of {{I-D.raskar-agentic-web-federated-resolution}}, the signature gives the
+provenance of the catalogue and is not authority evidence: it does not show that a provider
+authorised its entry. This document defines no authority evidence for individual entries.
+
+## Privacy {#privacy}
+
+A catalogue is published as a whole, so anyone can list every entry in it. Exact lookup of a
+subject the client already knows, as in {{I-D.raskar-agentic-web-federated-resolution}},
+does not have this property. An index SHOULD list only capabilities that their providers
+offer to the public, and SHOULD NOT list an entry that identifies a natural person, such as
+a personal account or a personal agent, unless that person asked to be listed. Federating
+indexes keep copies of the catalogues they read ({{FEDERATION}}), so a published entry can
+stay with them for some time after the index withdraws it.
 
 ## URIs from other parties
 
@@ -470,6 +545,10 @@ This section records the status of known implementations at the time of writing,
 * Two services operated by parties unrelated to the author publish catalogues that verify
   under `ed25519-pipe-2` (checked on 2026-10-30 with the conformance runner in {{VECTORS}}).
   Which software they run is not known.
+* The reference implementation applies the three checks in {{freshness}}. For the first it
+  keeps, for each index and pinned key, the latest `generated_at` it has verified; the
+  defaults for the second and the third are seven days and one hour. All three run on the
+  six indexes since 2026-11-04.
 
 No implementation by another party is known to have been written from this document.
 
@@ -535,10 +614,10 @@ Change and replay:
 : The catalogue's `generated_at` changes at every generation, whether or not the entries
   changed. A reader can tell whether they changed by comparing the digest of `capabilities`
   ({{digest}}) with that of the last verified catalogue. Because `generated_at` is in the signed string, a
-  reader can also detect a catalogue older than one it has already verified.
+  reader can also detect a catalogue older than one it has already verified ({{freshness}}).
 
-This document defines no validity window or refresh hint; MDI's Freshness has members for
-both. A later revision may add them.
+Neither document carries a validity window or a refresh hint; MDI's Freshness has members for
+both. A reader applies a maximum age of its own choosing ({{freshness}}).
 
 # Implementation experience
 {:numbered="false"}
@@ -551,6 +630,23 @@ These failures in deployed implementations led to requirements in this document:
 * Three verifiers failed on a signature encoded as a bare string ({{signature-object}}).
 * A widely used Ed25519 library accepted a signature under a small-order key for an arbitrary
   message ({{verify}}).
+
+# Changes from -03
+{:numbered="false"}
+
+Added {{freshness}}: a reader SHOULD reject a catalogue older than the last one it verified
+from the same index, MAY apply a maximum age, and SHOULD reject a catalogue dated ahead of its
+clock. Added {{privacy}}: a catalogue can be listed in full, so an index SHOULD NOT list
+entries that identify a person without that person's request. The Security Considerations
+now state the scope of a signature also in the terms of
+{{I-D.raskar-agentic-web-federated-resolution}}. Implementation Status records which freshness
+checks the reference implementation applies. The reference to {{FEDERATION}} now names -02.
+
+{{dawn}} now follows the responsible Area Director's reading of the charter {{DAWN-SCOPE}}:
+only the catalogue location, the protocol versions and the DNS record are within it, and
+the other members of the discovery document are marked as adjacent work. The Abstract says
+the same. Added {{integrity}} on the integrity of the discovery document and of the DNS
+record, which the charter requires.
 
 # Changes from -02
 {:numbered="false"}
