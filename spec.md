@@ -680,7 +680,7 @@ counterpart is `aimarket_escrow`.
 |------|--------|------------------|--------|
 | open | depositor | `POST /ai-market/v2/channel/open` with `{"deposit_usd": <json number>}` → `openChannel(channelId, token, depositAmount)` | Transfers tokens to escrow, sets 24h expiry. The response carries `channel.channel_id`. |
 | debit | hub (signed by depositor) | `debitChannel(channelId, amount, receiptId, deadline, sig)` | Increments `usedAmount`, marks `receiptId` used, binds hub to channel on first call. |
-| close | depositor | `POST /ai-market/v2/channel/close` with `{"channel_id": "<id>"}` | HTTP request that asks the hub to submit `settleChannel`. It is not a second settlement rule. |
+| close | depositor | `POST /ai-market/v2/channel/close` with `{"channel_id": "<id>"}` | Closes the channel in the hub's ledger only; the hub submits no transaction. On an escrow-funded channel the remainder stays in the contract (`refund_status: "on_chain"`, `refund_how`) until the depositor calls `requestClose` and then `settleChannel`, or `expireChannel` after expiry. On a transfer-funded channel the remainder is recorded as `refund_owed_usd`, an operator debt (`refund_executed_usd` is 0). It is not a second settlement rule. |
 | settle | depositor OR bound hub | `settleChannel(channelId)` | Pays `usedAmount` to bound hub, refunds remainder to depositor. |
 | refund | depositor only (and only before any debit) | `refundChannel(channelId, reason)` | Full refund (e.g. safety gate blocked). |
 | expire | anyone after expiry | `expireChannel(channelId)` | Same economics as settle — permissionless cleanup. |
@@ -1058,7 +1058,7 @@ unauthenticated HTTP request.
 | GET | `/ai-market/v2/search` | Federated NL search | v2 |
 | POST | `/ai-market/v2/invoke` | Federated invocation | v2 |
 | POST | `/ai-market/v2/channel/open` | Open a payment channel; transfers tokens into escrow (§6.1) | v2 |
-| POST | `/ai-market/v2/channel/close` | Ask the hub to settle that channel (§6.1) | v2 |
+| POST | `/ai-market/v2/channel/close` | Close that channel in the hub's ledger; the refund itself is on-chain or owed (§6.1) | v2 |
 | GET | `/ai-market/v2/verification/{nonce}` | Pay-on-Verified verdict lookup by receipt nonce | v2 |
 | POST | `/ai-market/v2/federation/announce` | Peer announcement | v2 |
 | GET | `/ai-market/v2/federation/peers` | List known peers | v2 |
