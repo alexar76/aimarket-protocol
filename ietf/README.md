@@ -1,9 +1,12 @@
 # IETF Internet-Drafts
 
-Two drafts, split from the single federation draft that lived here until 2026-10-30, so that
-each lands in the scope of the body that owns its layer:
+The IETF Datatracker lists [discovery revision -03](https://datatracker.ietf.org/doc/draft-artamokhov-dawn-marketplace-discovery/03/)
+and [federation revision -01](https://datatracker.ietf.org/doc/draft-artamokhov-dawn-index-federation/01/)
+as active individual Internet-Drafts as of 2026-11-12. Neither has an RFC stream or working-group
+adoption. The local files below are newer, unsubmitted revisions. Their requested categories are
+the author's proposals.
 
-| File | Subject | Category | Where it is aimed |
+| File | Subject | Requested category | Where it is aimed |
 |---|---|---|---|
 | `draft-artamokhov-dawn-marketplace-discovery-04.md` | the discovery document at a well-known URI, the signed catalogue, key pinning, catalogue freshness, the `ed25519-pipe-2` signature profile (= spec §2.1, §7.3.1–7.3.2, §7.3.7) | Standards Track | the discovery document: DAWN's minimum public discovery information for "a service such as a catalog"; the catalogue, its profile, key pinning and freshness: adjacent work, labelled so in §1.2 since -03 |
 | `draft-artamokhov-dawn-index-federation-02.md` | crawl, reciprocal identification, announcement, admission (pending ≠ admitted), catalogue preview (= spec §2.2–2.6) | Experimental | input to DAWN's gap analysis — `draft-jimenez-dawn-discovery-landscape` §6.2 names "no interoperable federation between directories" |
@@ -146,9 +149,10 @@ classes; "cooperating capability indexes exchanging catalogues" is the one these
 - **The space is crowded.** Roughly a dozen individual drafts sit adjacent to agent discovery
   (AIDIP, ADP, DNS-AID, AID, ARDP, AGNTCY ADS, …). Each draft's §1.1 says plainly what it does
   *not* specify; do not trim it.
-- **The Implementation Status sections contain an admission.** Both say in bold that no
-  independent implementation exists. A reviewer who discovers that unaided will discount
-  everything else; removing the sentence would be the single most damaging edit available.
+- **Implementation Status.** Discovery records three further implementations written by the
+  same author from the text and vectors, without the reference source. Two unrelated operators
+  publish catalogues that passed the verifier, with the software they used still unknown. Both
+  drafts record that no implementation written by another party from the draft is known.
 
 ## Relationship to the rest of this repository
 
