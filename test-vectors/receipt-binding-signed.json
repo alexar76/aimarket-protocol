@@ -1,0 +1,50 @@
+{
+  "description": "Receipt binding (spec §7.3.9): the request input, the answer's output member and the client nonce, signed by the hub that answered.",
+  "request": {
+    "headers": {
+      "X-Client-Nonce": "agent-task-0042"
+    },
+    "input": {
+      "text": "Grüß Gott",
+      "target": "en"
+    }
+  },
+  "response": {
+    "success": true,
+    "result": {
+      "translation": "Good day",
+      "detected": "de"
+    },
+    "receipt": {
+      "nonce": "rcpt_test001",
+      "product_id": "prod-001",
+      "capability_id": "translate.multi@v2",
+      "price_usd": 0.4,
+      "latency_ms": 8100,
+      "success": true,
+      "timestamp": "2026-08-28T09:00:50Z",
+      "signature": {
+        "algorithm": "ed25519",
+        "value": "ZM1yI5B1fj9pEBNM2tpmgmZDaCg1+VVw50NrgredPWaQe9ggCRumdaVGaXirDHbnPJCzIjYPDj+v9WhfiXreDQ=="
+      }
+    },
+    "receipt_binding": {
+      "v": 1,
+      "hub": "https://test-hub.example.com",
+      "receipt_nonce": "rcpt_test001",
+      "receipt_signer": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+      "input_sha256": "f86633dee4992f64f52631c2ce6bcfc6d31b589f6106c700c641441f9baa719e",
+      "output_member": "result",
+      "output_sha256": "eb57267a733d4d8e9df4fa2bcf2cbbb6e86bb5ed1d05e85cf840c3807ccda031",
+      "client_nonce": "agent-task-0042",
+      "timestamp": "2026-10-30T12:00:00Z",
+      "signature": {
+        "algorithm": "ed25519",
+        "public_key": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+        "value": "NlmWIBaRiloYkOueWyP+HQXCHe7LMHP7ZXv8Wct84cbPXEGDi7u4RAE8U+wgC18Jgy6Ie+gs12XXN7tHgZfaBQ=="
+      }
+    }
+  },
+  "canonical": "receipt_binding:1|2f0be9c9807944d1913158c4dc589e98de1d586faf12798dbaec023f62feaccd",
+  "public_key": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo="
+}

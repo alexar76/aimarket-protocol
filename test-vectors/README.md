@@ -34,6 +34,7 @@ Public key  (b64): 11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=
 | `manifest-signed.json` | Capability manifest, five-field canonical (§7.3.2) | yes |
 | `receipt-signed.json` | Invocation receipt, seven-field v1 canonical (§7.3.3) — carries no v2 field, so it is unambiguous | yes |
 | `receipt-v2-signed.json` | Rejection receipt, v2 canonical with the `fields:` digest (§7.3.4) | yes |
+| `receipt-binding-signed.json` | Receipt binding (§7.3.9): request input, answer output and client nonce, with the response it binds. Regenerate with `generate_binding.py`; it is deterministic | yes |
 | `federation-announce-signed.json` | Peer announcement, three-field canonical (§7.3.5) | yes |
 | `provenance-receipt-signed.json` | Provenance receipt (W3C VC-compatible envelope) | yes |
 | `debit-authorization.json` | EIP-712 `DebitAuthorization` (§6.2) | EIP-712, not Ed25519 |
