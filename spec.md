@@ -324,6 +324,16 @@ recipient belonging to it. The hub is not in the payment path. A buyer calls the
 URL itself and pays per the `402` it receives; it SHOULD refuse when that `402` names another
 `payTo` than the listing or asks for more than the listed amount.
 
+**Outside records.** Delivery is what an observation cannot see. Some services pay sellers
+themselves and publish what each paid call returned. A hub MAY link to them: a seller entry
+MAY carry `outside_records` (`[{by, url}]`, a page about the seller) and a route MAY carry
+`outside_checks` (`[{by, url}]`, an answer about exactly this URL and method that an agent
+can read before it pays). A record is keyed by the host exactly as it appears in the
+seller's origin; a hub MUST NOT shorten or rewrite the host to find one. The hub only builds
+these links: it MUST NOT fetch them on a buyer's behalf, MUST NOT fold their answers into
+`tier`, `fresh` or `served`, and MUST say in the listing that their answers are not part of
+what it vouches for. The operator chooses which services are linked and MAY link none.
+
 A seller that wants signed receipts, trust scores and routing through hubs uses the
 admission path of §2.4; an observed listing does not lead to it automatically.
 
