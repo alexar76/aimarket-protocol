@@ -308,9 +308,9 @@ infrastructure that every participant runs. This document requires no shared
 infrastructure. A DHT-based directory could publish a discovery document and be admitted
 like any other peer.
 
-{{I-D.pioli-agent-discovery}} federates through configured trust relationships, which
-corresponds to closed admission here. This document adds open admission under the rules in
-{{admission-rules}}.
+{{I-D.pioli-agent-discovery}} (revision -01, expired) federates through configured trust
+relationships, which corresponds to closed admission here. This document adds open admission
+under the rules in {{admission-rules}}.
 
 {{A2A}} defines a signed card per agent and leaves registries to deployments. An index under
 this document can act as such a registry, and MAY also publish an agent card for itself.
