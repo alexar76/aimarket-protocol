@@ -378,7 +378,12 @@ An index keeps copies of the entries of its admitted peers, so an entry that a p
 withdraws stays with every index that read it until they read the peer again. An index SHOULD
 replace its stored entries for a peer with the entries of each catalogue it verifies from that
 peer, so that a withdrawn entry disappears at the next successful retrieval. When a retrieval
-fails, it SHOULD keep the stored entries. The privacy considerations of {{DISCOVERY}} apply to
+fails, it SHOULD keep the stored entries, so that a short outage of the peer does not empty
+them, but only for a bounded period after the last catalogue it verified from that peer. A
+catalogue states no validity period of its own, so the index sets this period. Past it, an
+index MUST NOT return those entries in answers and SHOULD delete them; a later successful
+retrieval indexes the peer again. An index SHOULD tell its clients when it last verified the
+catalogue an entry was copied from. The privacy considerations of {{DISCOVERY}} apply to
 every catalogue an index copies.
 
 ## Limits
@@ -440,13 +445,16 @@ No implementation of this document by another party is known.
 * An index that added entries from each verified catalogue but never removed any kept serving
   96 entries that it had once copied from a peer's catalogue and that the peer no longer
   listed. It now replaces a peer's entries after each successful retrieval ({{privacy}}).
+* The same index kept a peer's entries with no limit when retrievals failed. It now stops
+  returning them 48 hours after the last catalogue it verified from that peer and deletes them
+  at its next crawl; each entry carries the time its catalogue was last verified ({{privacy}}).
 
 # Changes from -01
 {:numbered="false"}
 
 {{privacy}} now asks an index to replace a peer's stored entries at each successful
-retrieval and to keep them when a retrieval fails, and refers to the privacy considerations
-of {{DISCOVERY}}. Relationship to Other Work adds
+retrieval, to keep them when a retrieval fails for a bounded period only and not to return
+them after it, and refers to the privacy considerations of {{DISCOVERY}}. Relationship to Other Work adds
 {{I-D.raskar-agentic-web-federated-resolution}}. The reference to {{DISCOVERY}} now names -04.
 
 The Abstract and Introduction now describe this document as adjacent to the DAWN charter,

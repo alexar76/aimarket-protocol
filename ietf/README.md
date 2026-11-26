@@ -106,6 +106,14 @@ state is recorded below this line as it happens.
   Introduction call it adjacent work, add "indexing across the wider Internet" to the excluded list, and
   point to the gap in the jimenez landscape draft instead of a "gap analysis", which the charter does not
   list. idnits unchanged (discovery 2 downrefs + 1 non-ASCII, federation 0 errors + 1 non-ASCII).
+- **2026-11-26, same unsubmitted federation -02: a bound on entries kept after a failed retrieval.** Roberto
+  Pioli on dawn@ietf.org (thread on draft-king-dawn-requirements-02) proposed REQ-PROP-6 (information copied
+  from another source not returned as valid past its validity) and cited our 96-entries case, noting that a
+  failed read kept a peer's entries with no limit. Privacy now keeps them for a bounded period only, past which
+  an index MUST NOT return them and SHOULD delete them, and asks an index to say when it last verified the
+  catalogue an entry came from; Implementation experience adds the hub's 48-hour bound
+  (`AIMARKET_FEDERATED_MAX_UNVERIFIED_S`, `database.py` `_SERVABLE`, `crawler.py` expiry at the end of a crawl).
+  Built with `./build.sh` (only the expected date warning).
 - The datatracker API (`/api/submission`) needs a datatracker account on the author's email; without one it
   answers `No such user`. The web form needs no account.
 
